@@ -1,6 +1,6 @@
 export const metadata = {
-  title: 'Lo Shu Numerology | Feng Shui Analysis 2026',
-  description: 'Classical Feng Shui, Lo Shu numerology and Flying Stars analysis',
+  title: 'Numerology Patterns',
+  description: 'Classical  numerology and Flying Stars analysis',
 };
 
 export default function RootLayout({

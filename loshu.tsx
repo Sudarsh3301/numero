@@ -769,10 +769,10 @@ export default function App() {
         <h1 style={{margin:0,fontSize:20,fontWeight:900,
           background:"linear-gradient(90deg,#c084fc,#60a5fa,#f59e0b,#f87171)",
           WebkitBackgroundClip:"text",WebkitTextFillColor:"transparent"}}>
-          Lo Shu · Kua · Flying Stars
+          Pure Math Based Numerology
         </h1>
         <p style={{color:"rgba(255,255,255,0.3)",fontSize:10,margin:"3px 0 0"}}>
-          Pure Math → Ba Zhai → Flying Star 2026 → AI Narrative
+          Pure Math → AI to Summarize it
         </p>
       </div>
 
