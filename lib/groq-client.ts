@@ -38,7 +38,7 @@ export async function generateWithFallback(
   options?: {
     temperature?: number;
     maxTokens?: number;
-    responseFormat?: { type: 'json_object' } | { type: 'json_schema'; json_schema: any };
+    responseFormat?: { type: 'json_object' };
   }
 ): Promise<string> {
   const { temperature = 1, maxTokens = 2048, responseFormat } = options || {};

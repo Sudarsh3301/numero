@@ -51,6 +51,8 @@ export async function POST(request: NextRequest) {
 5. 🛠 Behavioral Advice - 2-3 specific actions
 6. 🔮 2026 Couples Forecast - both personal years, elemental modifiers`;
 
+    const expectedSections = mode === 'single' ? 5 : 6;
+
     const prompt = [
       systemInstruction,
       '',
@@ -62,43 +64,19 @@ export async function POST(request: NextRequest) {
       analysisFormat,
       '',
       'Rules: Use names. Honesty over comfort. 300-360 words total.',
+      '',
+      `CRITICAL: Return EXACTLY ${expectedSections} sections. Each section MUST have:`,
+      '- A non-empty "title" field (string with emoji)',
+      '- A non-empty "body" field (string with analysis)',
+      '',
+      'Response format (JSON only, no markdown):',
+      '{',
+      '  "sections": [',
+      '    {"title": "🧠 Section Title", "body": "Analysis text..."},',
+      '    ...',
+      '  ]',
+      '}',
     ].join('\n');
-
-    // Define JSON Schema for structured output
-    const responseSchema = {
-      name: 'numerology_analysis',
-      strict: true,
-      schema: {
-        type: 'object',
-        properties: {
-          sections: {
-            type: 'array',
-            items: {
-              type: 'object',
-              properties: {
-                title: {
-                  type: 'string',
-                  description: 'Section title with emoji (e.g., "🧠 Core Psychological Profile")',
-                },
-                body: {
-                  type: 'string',
-                  description: 'Analysis text for this section',
-                },
-              },
-              required: ['title', 'body'],
-              additionalProperties: false,
-            },
-            description: mode === 'single'
-              ? 'Exactly 5 sections for single person analysis'
-              : 'Exactly 6 sections for relationship analysis',
-            minItems: mode === 'single' ? 5 : 6,
-            maxItems: mode === 'single' ? 5 : 6,
-          },
-        },
-        required: ['sections'],
-        additionalProperties: false,
-      },
-    };
 
     const responseText = await withRetry(
       () => generateWithFallback(
@@ -106,19 +84,45 @@ export async function POST(request: NextRequest) {
         {
           temperature: 1,
           maxTokens: 2048,
-          responseFormat: {
-            type: 'json_schema',
-            json_schema: responseSchema,
-          },
+          responseFormat: { type: 'json_object' },
         }
       ),
       'analyze'
     );
 
-    // Parse JSON response (structure is guaranteed by JSON Schema)
+    // Parse and validate JSON response
     let narrative;
     try {
       narrative = JSON.parse(responseText);
+
+      // Validate structure
+      if (!narrative.sections || !Array.isArray(narrative.sections)) {
+        throw new Error('Invalid response structure: missing sections array');
+      }
+
+      // Filter out sections with empty or whitespace-only title/body
+      const validSections = narrative.sections.filter(
+        (section: { title: string; body: string }) =>
+          section.title &&
+          section.title.trim() !== '' &&
+          section.body &&
+          section.body.trim() !== ''
+      );
+
+      // Ensure we have the expected number of sections
+      if (validSections.length < expectedSections) {
+        console.warn(
+          `Expected ${expectedSections} sections but got ${validSections.length} valid sections. ` +
+          `Original count: ${narrative.sections.length}`
+        );
+        throw new Error(
+          `Insufficient valid sections: expected ${expectedSections}, got ${validSections.length}`
+        );
+      }
+
+      // Use only the expected number of sections (in case AI generated extras)
+      narrative.sections = validSections.slice(0, expectedSections);
+
     } catch (parseError) {
       console.error('JSON parsing failed:', parseError);
       console.error('Response text:', responseText);
