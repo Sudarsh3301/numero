@@ -319,6 +319,23 @@ async function fetchNarrative(p1, p2, compat, mode, lang) {
       messages: [{ role: "user", content: JSON.stringify(payload) }],
     }),
   });
+
+  if (!resp.ok) {
+    const errData = await resp.json().catch(() => ({}));
+
+    // Check for user-friendly message
+    if (errData.userMessage) {
+      throw new Error(errData.userMessage);
+    }
+
+    // Check for rate limit
+    if (resp.status === 429) {
+      throw new Error(errData.message || 'Rate limit exceeded. Please try again in a moment.');
+    }
+
+    throw new Error(errData.message || `HTTP ${resp.status}`);
+  }
+
   const data = await resp.json();
   return data.narrative;
 }
@@ -618,7 +635,14 @@ const ChatPanel = memo(function ChatPanel({ chartContext, lang }: { chartContext
       const updated=[...historyRef.current,{role:"user",content:q},{role:"assistant",content:answer}];
       historyRef.current=updated.slice(-10);
       setMsgs(m=>[...m,{role:"assistant",text:answer}]);
-    } catch(e){ setMsgs(m=>[...m,{role:"assistant",text:"Something went wrong. Try again."}]); }
+    } catch(e){
+      const errorMsg = (e as Error).message;
+      if (errorMsg.includes('Rate limit') || errorMsg.includes('high demand')) {
+        setMsgs(m => [...m, { role: "assistant", text: "⏳ Chat service is experiencing high demand. Please wait 30 seconds and try again." }]);
+      } else {
+        setMsgs(m => [...m, { role: "assistant", text: "Something went wrong. Try again." }]);
+      }
+    }
     setBusy(false);
   };
 
@@ -744,7 +768,18 @@ export default function App() {
       const prof2=m2?buildProfile(m2,kua.p2,kua.mod2,m2.name):null;
       const narrative=await fetchNarrative(prof1,prof2,kua.compat,mode,lang);
       setResult({m1,m2,kua,narrative,mode,lang,prof1,prof2});
-    } catch(e){setError("Something went wrong. Please try again.");console.error(e);}
+    } catch(e){
+      // Enhanced error message handling
+      const errorMsg = (e as Error).message;
+      if (errorMsg.includes('Rate limit') || errorMsg.includes('high demand')) {
+        setError("⏳ AI service is busy. Please wait 30 seconds and try again.");
+      } else if (errorMsg.includes('formatting error')) {
+        setError("⚠️ AI response error. Please try again.");
+      } else {
+        setError(errorMsg || "Something went wrong. Please try again.");
+      }
+      console.error(e);
+    }
     setLoading(false);
   };
 

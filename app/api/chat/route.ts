@@ -1,12 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { GoogleGenAI, HarmCategory, HarmBlockThreshold } from '@google/genai';
-
-const SAFETY_SETTINGS = [
-  { category: HarmCategory.HARM_CATEGORY_HARASSMENT,        threshold: HarmBlockThreshold.BLOCK_NONE },
-  { category: HarmCategory.HARM_CATEGORY_HATE_SPEECH,       threshold: HarmBlockThreshold.BLOCK_NONE },
-  { category: HarmCategory.HARM_CATEGORY_SEXUALLY_EXPLICIT, threshold: HarmBlockThreshold.BLOCK_NONE },
-  { category: HarmCategory.HARM_CATEGORY_DANGEROUS_CONTENT, threshold: HarmBlockThreshold.BLOCK_NONE },
-];
+import { generateWithFallback } from '@/lib/groq-client';
 
 const MAX_RETRIES = 2;
 
@@ -34,64 +27,75 @@ export async function POST(request: NextRequest) {
 
     const isHindi = lang === 'hi';
 
-    const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY || '' });
-
     const systemInstruction = `You are a direct Feng Shui and Lo Shu numerology analyst. ${
       isHindi
         ? 'Answer in Hindi (Devanagari). Mystical but clear.'
         : 'Answer in English.'
     } Answer specifically using their actual numbers, directions, elements, and flying star data. Never be generic. Max 130 words.`;
 
-    const promptParts = [
-      systemInstruction,
-      '',
-      'Chart Context:',
-      JSON.stringify(chartContext, null, 2),
-      '',
+    const messages: Array<{ role: 'system' | 'user' | 'assistant'; content: string }> = [
+      {
+        role: 'system',
+        content: systemInstruction,
+      },
+      {
+        role: 'user',
+        content: `Chart Context:\n${JSON.stringify(chartContext, null, 2)}`,
+      },
     ];
 
+    // Add conversation history
     if (history && history.length > 0) {
-      promptParts.push('Previous conversation:');
       history.forEach((msg: any) => {
-        promptParts.push(`${msg.role === 'assistant' ? 'You' : 'User'}: ${msg.content}`);
+        messages.push({
+          role: msg.role === 'assistant' ? 'assistant' : 'user',
+          content: msg.content,
+        });
       });
-      promptParts.push('');
     }
 
-    promptParts.push(`User question: ${question}`);
+    // Add current question
+    messages.push({
+      role: 'user',
+      content: question,
+    });
 
-    const response = await withRetry(
-      () => ai.models.generateContent({
-        model: 'gemini-2.5-flash',
-        config: {
-          thinkingConfig: { thinkingBudget: -1 },
-          temperature:    1,
-          topP:           0.95,
-          safetySettings: SAFETY_SETTINGS,
-        },
-        contents: [{ role: 'user', parts: [{ text: promptParts.join('\n') }] }],
+    const answer = await withRetry(
+      () => generateWithFallback(messages, {
+        temperature: 1,
+        maxTokens: 512,
       }),
       'chat'
     );
 
-    const answer      = response.text ?? '';
-    const finishReason = response.candidates?.[0]?.finishReason;
-
-    if (finishReason && finishReason !== 'STOP') {
-      console.warn('Gemini chat generation incomplete:', { finishReason, answerLength: answer.length });
-    }
-    if (finishReason === 'SAFETY') {
-      return NextResponse.json(
-        { error: 'Content filtered by AI safety systems', details: { finishReason } },
-        { status: 400 }
-      );
+    if (!answer || answer.trim() === '') {
+      throw new Error('Empty response from AI');
     }
 
     return NextResponse.json({ answer });
   } catch (error) {
     console.error('Chat error:', error);
+
+    const errorMessage = (error as Error).message;
+
+    // User-friendly error messages
+    if (errorMessage.includes('Rate limit') || errorMessage.includes('high demand')) {
+      return NextResponse.json(
+        {
+          error: 'Rate limit exceeded',
+          message: errorMessage,
+          answer: '⏳ Our AI is currently experiencing high demand. Please wait a moment and ask your question again.',
+        },
+        { status: 429 }
+      );
+    }
+
     return NextResponse.json(
-      { error: 'Internal server error', message: (error as Error).message },
+      {
+        error: 'Internal server error',
+        message: errorMessage,
+        answer: '❌ Something went wrong. Please try asking your question again.',
+      },
       { status: 500 }
     );
   }

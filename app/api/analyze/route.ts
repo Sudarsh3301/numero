@@ -1,30 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { GoogleGenAI, Type, HarmCategory, HarmBlockThreshold } from '@google/genai';
-
-const SECTIONS_SCHEMA = {
-  type: Type.OBJECT,
-  required: ['sections'],
-  properties: {
-    sections: {
-      type: Type.ARRAY,
-      items: {
-        type: Type.OBJECT,
-        required: ['title', 'body'],
-        properties: {
-          title: { type: Type.STRING },
-          body:  { type: Type.STRING },
-        },
-      },
-    },
-  },
-};
-
-const SAFETY_SETTINGS = [
-  { category: HarmCategory.HARM_CATEGORY_HARASSMENT,       threshold: HarmBlockThreshold.BLOCK_NONE },
-  { category: HarmCategory.HARM_CATEGORY_HATE_SPEECH,      threshold: HarmBlockThreshold.BLOCK_NONE },
-  { category: HarmCategory.HARM_CATEGORY_SEXUALLY_EXPLICIT,threshold: HarmBlockThreshold.BLOCK_NONE },
-  { category: HarmCategory.HARM_CATEGORY_DANGEROUS_CONTENT,threshold: HarmBlockThreshold.BLOCK_NONE },
-];
+import { generateWithFallback } from '@/lib/groq-client';
 
 const MAX_RETRIES = 2;
 
@@ -51,8 +26,6 @@ export async function POST(request: NextRequest) {
     const { system, messages } = clientRequest;
 
     const isHindi = system.includes('Hindi') || system.includes('Devanagari');
-
-    const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY || '' });
 
     const systemInstruction = `You are a direct, psychologically sharp Feng Shui and Lo Shu numerology analyst. ${
       isHindi
@@ -89,43 +62,79 @@ export async function POST(request: NextRequest) {
       analysisFormat,
       '',
       'Rules: Use names. Honesty over comfort. 300-360 words total.',
+      '',
+      'IMPORTANT: Respond with ONLY a valid JSON object matching this exact structure:',
+      '{"sections": [{"title": "Section Title", "body": "Analysis text..."}]}',
+      '',
+      'Do not include any markdown, code blocks, or explanatory text. Just the raw JSON object.',
     ].join('\n');
 
-    const response = await withRetry(
-      () => ai.models.generateContent({
-        model: 'gemini-2.5-flash',
-        config: {
-          thinkingConfig:   { thinkingBudget: -1 },
-          responseMimeType: 'application/json',
-          responseSchema:   SECTIONS_SCHEMA,
-          temperature:      1,
-          topP:             0.95,
-          safetySettings:   SAFETY_SETTINGS,
-        },
-        contents: [{ role: 'user', parts: [{ text: prompt }] }],
-      }),
+    const responseText = await withRetry(
+      () => generateWithFallback(
+        [{ role: 'user', content: prompt }],
+        {
+          temperature: 1,
+          maxTokens: 2048,
+          responseFormat: { type: 'json_object' },
+        }
+      ),
       'analyze'
     );
 
-    const text         = response.text ?? '';
-    const finishReason = response.candidates?.[0]?.finishReason;
+    // Parse and validate JSON response
+    let narrative;
+    try {
+      narrative = JSON.parse(responseText);
 
-    if (finishReason && finishReason !== 'STOP') {
-      console.warn('Gemini generation incomplete:', { finishReason, textLength: text.length });
-    }
-    if (finishReason === 'SAFETY') {
+      // Validate structure
+      if (!narrative.sections || !Array.isArray(narrative.sections)) {
+        throw new Error('Invalid response structure');
+      }
+
+      // Ensure all sections have title and body
+      for (const section of narrative.sections) {
+        if (!section.title || !section.body) {
+          throw new Error('Section missing title or body');
+        }
+      }
+    } catch (parseError) {
+      console.error('JSON parsing failed:', parseError);
+      console.error('Response text:', responseText);
+
       return NextResponse.json(
-        { error: 'Content filtered by AI safety systems', details: { finishReason } },
-        { status: 400 }
+        {
+          error: 'AI response formatting error',
+          message: 'The AI generated an invalid response. Please try again.',
+          details: (parseError as Error).message,
+        },
+        { status: 500 }
       );
     }
 
-    const narrative = JSON.parse(text);
     return NextResponse.json({ narrative });
   } catch (error) {
     console.error('Analysis error:', error);
+
+    const errorMessage = (error as Error).message;
+
+    // User-friendly error messages
+    if (errorMessage.includes('Rate limit') || errorMessage.includes('high demand')) {
+      return NextResponse.json(
+        {
+          error: 'Rate limit exceeded',
+          message: errorMessage,
+          userMessage: 'Our AI service is experiencing high demand. Please wait a moment and try again.',
+        },
+        { status: 429 }
+      );
+    }
+
     return NextResponse.json(
-      { error: 'Internal server error', message: (error as Error).message },
+      {
+        error: 'Internal server error',
+        message: errorMessage,
+        userMessage: 'Something went wrong while analyzing your chart. Please try again.',
+      },
       { status: 500 }
     );
   }
