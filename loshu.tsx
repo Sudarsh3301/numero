@@ -1,6 +1,26 @@
 'use client';
 
 import { useState, useRef, useEffect, useMemo, memo } from "react";
+import type { CoupleArchetypes, CoupleSignals, NumerologySignals, SingleArchetypes } from "@/lib/signal-extractor";
+
+type NarrativePayload = {
+  narrative: { sections?: any[]; status?: string };
+  signals: NumerologySignals | CoupleSignals;
+  archetypes: SingleArchetypes | CoupleArchetypes;
+};
+
+type AnalysisResult = {
+  m1: any;
+  m2: any;
+  kua: any;
+  narrative: NarrativePayload["narrative"];
+  mode: string;
+  lang: string;
+  prof1: any;
+  prof2: any;
+  signals: NarrativePayload["signals"];
+  archetypes: NarrativePayload["archetypes"];
+};
 
 // ─── LAYER 1: PURE MATH ──────────────────────────────────────────────────────
 function sumReduce(n) {
@@ -310,7 +330,7 @@ Rules: Use names. Honesty over comfort. 300–360 words total. Return valid JSON
 
 // Accepts pre-built profiles (computed once in calculate()) so buildProfile is not duplicated
 async function fetchNarrative(p1, p2, compat, mode, lang) {
-  const payload = { mode, p1, ...(p2 && { p2, compatibility: compat }) };
+  const payload = { mode, person1: p1, ...(p2 && { person2: p2, compatibility: compat }) };
   const resp = await fetch("/api/analyze", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
@@ -337,7 +357,11 @@ async function fetchNarrative(p1, p2, compat, mode, lang) {
   }
 
   const data = await resp.json();
-  return data.narrative;
+  return {
+    narrative: data.narrative,
+    signals: data.signals,
+    archetypes: data.archetypes,
+  } as NarrativePayload;
 }
 
 async function fetchFollowUp(question, chartContext, lang, history) {
@@ -347,7 +371,17 @@ async function fetchFollowUp(question, chartContext, lang, history) {
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ question, chartContext, lang, history }),
   });
+
   const data = await resp.json();
+
+  if (!resp.ok) {
+    if (resp.status === 429) {
+      throw new Error(data.message || data.answer || 'Rate limit exceeded. Please try again in a moment.');
+    }
+
+    throw new Error(data.message || data.answer || `HTTP ${resp.status}`);
+  }
+
   return data.answer;
 }
 
@@ -536,13 +570,13 @@ const ArrowsPanel = memo(function ArrowsPanel({ arrows }: { arrows: any }) {
       {arrows.present.map((a,i)=>(
         <div key={i} style={{display:"flex",alignItems:"flex-start",gap:8,marginBottom:6}}>
           <span style={{fontSize:13,color:"#4ade80",marginTop:1}}>✦</span>
-          <div><div style={{fontSize:11,fontWeight:"bold",color:"#4ade80"}}>{a.name}</div><div style={{fontSize:10,color:"rgba(255,255,255,0.45)"}}>{ARROWS.find(x=>x.name===a)?.desc||""}</div></div>
+          <div><div style={{fontSize:11,fontWeight:"bold",color:"#4ade80"}}>{a.name}</div><div style={{fontSize:10,color:"rgba(255,255,255,0.45)"}}>{a.desc}</div></div>
         </div>
       ))}
       {arrows.absent.map((a,i)=>(
         <div key={i} style={{display:"flex",alignItems:"flex-start",gap:8,marginBottom:6}}>
           <span style={{fontSize:13,color:"#f87171",marginTop:1}}>✗</span>
-          <div style={{fontSize:11,fontWeight:"bold",color:"#f87171"}}>{a}</div>
+          <div style={{fontSize:11,fontWeight:"bold",color:"#f87171"}}>{a.name}</div>
         </div>
       ))}
     </div>
@@ -745,7 +779,7 @@ export default function App() {
   const [lang,setLang]=useState("en");
   const [p1,setP1]=useState({dob:"",gender:"M",name:""});
   const [p2,setP2]=useState({dob:"",gender:"F",name:""});
-  const [result,setResult]=useState(null);
+  const [result,setResult]=useState<AnalysisResult | null>(null);
   const [loading,setLoading]=useState(false);
   const [error,setError]=useState("");
 
@@ -763,11 +797,22 @@ export default function App() {
       const m1={...mathLayer(p1.dob,p1.gender),name:p1.name};
       const m2=mode==="couple"?{...mathLayer(p2.dob,p2.gender),name:p2.name}:null;
       const kua=kuaLayer(m1,m2);
-      // Build profiles once — reused for AI narrative and chartCtx (no second buildProfile call)
+      // Build profiles once — reused for analysis request payloads only
       const prof1=buildProfile(m1,kua.p1,kua.mod1,m1.name);
       const prof2=m2?buildProfile(m2,kua.p2,kua.mod2,m2.name):null;
-      const narrative=await fetchNarrative(prof1,prof2,kua.compat,mode,lang);
-      setResult({m1,m2,kua,narrative,mode,lang,prof1,prof2});
+      const analysis=await fetchNarrative(prof1,prof2,kua.compat,mode,lang);
+      setResult({
+        m1,
+        m2,
+        kua,
+        narrative:analysis.narrative,
+        mode,
+        lang,
+        prof1,
+        prof2,
+        signals:analysis.signals,
+        archetypes:analysis.archetypes,
+      });
     } catch(e){
       // Enhanced error message handling
       const errorMsg = (e as Error).message;
@@ -790,9 +835,8 @@ export default function App() {
   // Memoized — only recomputes when result changes, not on chat keystrokes
   const chartCtx=useMemo(()=>R?{
     mode:R.mode,
-    p1:R.prof1,
-    flyingStars2026:R.m1.flyingStars,
-    ...(R.m2&&{p2:R.prof2,compat:R.kua.compat})
+    signals:R.signals,
+    archetypes:R.archetypes,
   }:null,[R]);
 
   return (

@@ -1,10 +1,3 @@
-
-  1. Two-Call Architecture: Deterministic signals → LLM Call 1 (archetypes) → LLM Call 2 (narrative)
-  2. Archetype Synthesis: Primary, Secondary, and Shadow archetypes for psychological coherence
-  3. Updated Token Savings: 64% overall reduction (slightly less than deterministic-only but with better quality)
-  4. Couple Mode Support: Archetypes for both people
-  5. Enhanced Chat: Uses archetypes for consistent responses across conversations
-
   The plan is comprehensive and ready for implementation. Let me exit plan mode.
 
 ● User approved Claude's plan
@@ -271,9 +264,9 @@
 
      Task: Generate 3 personality archetypes that create a coherent psychological framework:
 
-     1. PRIMARY ARCHETYPE - Core identity, default behavior pattern (name + 1-2 sentence description)
-     2. SECONDARY ARCHETYPE - Supporting strengths, complementary traits (name + 1-2 sentence description)
-     3. SHADOW ARCHETYPE - Hidden weaknesses, blind spots (name + 1-2 sentence description)
+     6. PRIMARY ARCHETYPE - Core identity, default behavior pattern (name + 1-2 sentence description)
+     7. SECONDARY ARCHETYPE - Supporting strengths, complementary traits (name + 1-2 sentence description)
+     8. SHADOW ARCHETYPE - Hidden weaknesses, blind spots (name + 1-2 sentence description)
 
      Guidelines:
      - Use psychological language, not mystical
@@ -349,12 +342,12 @@
      5. 📅 2026 Forecast - Weave personal year, year modifier, directional energy, and feng shui alerts through archetype lens
      ` : `
      Analysis Format (6 sections):
-     1. 🧠 Individual Essences - Use each person's PRIMARY archetype
-     2. 🔗 Core Alignment - How archetypes complement, reference element relationship and shared lucky directions
-     3. ⚡ Primary Friction Areas - Where shadow archetypes clash, reference conflicting elements and number gaps
-     4. 📅 Long-Term Outlook - Archetype compatibility momentum based on Kua harmony
-     5. 🛠 Behavioral Advice - 2-3 specific actions based on archetypes
-     6. 🔮 2026 Couples Forecast - Both personal years, modifiers, feng shui alerts through archetype lens
+     6. 🧠 Individual Essences - Use each person's PRIMARY archetype
+     7. 🔗 Core Alignment - How archetypes complement, reference element relationship and shared lucky directions
+     8. ⚡ Primary Friction Areas - Where shadow archetypes clash, reference conflicting elements and number gaps
+     9. 📅 Long-Term Outlook - Archetype compatibility momentum based on Kua harmony
+     10. 🛠 Behavioral Advice - 2-3 specific actions based on archetypes
+     11. 🔮 2026 Couples Forecast - Both personal years, modifiers, feng shui alerts through archetype lens
      `}
 
      Rules:
@@ -545,8 +538,8 @@
      File: app/api/chat/route.ts
 
      Changes:
-     1. Update to expect signals and archetypes instead of full chart context
-     2. Update system instruction to reference signals and archetypes for consistent responses
+     4. Update to expect signals and archetypes instead of full chart context
+     5. Update system instruction to reference signals and archetypes for consistent responses
 
      Implementation:
 
@@ -754,9 +747,9 @@
 
      Modified Files
 
-     1. ✅ app/api/analyze/route.ts - Two-stage LLM pipeline (archetypes + narrative), return signals and archetypes
-     2. ✅ app/api/chat/route.ts - Use signals and archetypes from context
-     3. ✅ loshu.tsx - Store signals and archetypes, update chartCtx
+     2. ✅ app/api/analyze/route.ts - Two-stage LLM pipeline (archetypes + narrative), return signals and archetypes
+     3. ✅ app/api/chat/route.ts - Use signals and archetypes from context
+     4. ✅ loshu.tsx - Store signals and archetypes, update chartCtx
 
      Total: 1 new file, 3 modified files
 
@@ -803,29 +796,29 @@
      npm run dev
 
      Test Cases:
-     1. Generate single person analysis
+     5. Generate single person analysis
        - Verify signals are extracted correctly
        - Verify archetypes are generated (primary, secondary, shadow)
        - Check console for signal and archetype JSON
        - Verify narrative uses archetype language
        - Check that narrative sections reference specific signals
-     2. Generate couple analysis
+     6. Generate couple analysis
        - Verify couple signals include both people
        - Verify archetypes generated for BOTH people
        - Check compatibility signals
        - Verify narrative references both people's archetypes
        - Check that compatibility analysis uses archetype framework
-     3. Ask follow-up questions
+     7. Ask follow-up questions
        - First message should send signals + archetypes (~150 tokens)
        - Follow-ups should send reference only (~50 tokens)
        - Verify responses maintain archetype consistency
        - Ask contradictory questions to test coherence
-     4. Compare token usage
+     8. Compare token usage
        - Log input tokens before/after for both LLM calls
        - Verify ~64% overall reduction
        - Check Groq dashboard for actual usage
        - Monitor archetype extraction cost (~150 tokens)
-     5. Qualitative assessment
+     9. Qualitative assessment
        - Read 3-5 generated analyses
        - Check if archetypes feel accurate and specific
        - Verify narrative doesn't have contradictory traits
@@ -913,6 +906,3 @@
      ✅ Groq API costs reduced by ~64%
      ✅ Archetypes reference specific signals (not generic)
      ✅ No contradictory traits in narratives
-
-● Excellent! The plan has been approved. Let me update the todo list to match the approved plan and then start implementation.
-  ⎿  You've hit your limit · resets 12:30am (Asia/Calcutta)

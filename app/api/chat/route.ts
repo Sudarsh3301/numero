@@ -20,18 +20,45 @@ async function withRetry<T>(fn: () => Promise<T>, label: string): Promise<T> {
   throw lastError;
 }
 
+function getChartSubject(chartContext: any): string {
+  if (chartContext?.mode === 'couple') {
+    const person1 = chartContext?.signals?.person1?.name || 'Person 1';
+    const person2 = chartContext?.signals?.person2?.name || 'Person 2';
+    return `${person1} and ${person2}`;
+  }
+
+  return chartContext?.signals?.name || 'user';
+}
+
 export async function POST(request: NextRequest) {
   try {
     const clientRequest = await request.json();
     const { question, chartContext, lang, history } = clientRequest;
 
+    if (!chartContext?.signals || !chartContext?.archetypes) {
+      return NextResponse.json(
+        {
+          error: 'Invalid chat context',
+          answer: '❌ Your chart context is missing. Please recalculate your chart and try again.',
+        },
+        { status: 400 }
+      );
+    }
+
     const isHindi = lang === 'hi';
 
-    const systemInstruction = `You are a direct Feng Shui and Lo Shu numerology analyst. ${
+    const systemInstruction = `You are a direct Lo Shu numerology and Feng Shui analyst. ${
       isHindi
         ? 'Answer in Hindi (Devanagari). Mystical but clear.'
         : 'Answer in English.'
-    } Answer specifically using their actual numbers, directions, elements, and flying star data. Never be generic. Max 130 words.`;
+    }
+
+The chart has already been analyzed and personality archetypes have been synthesized.
+
+Answer follow-up questions using the archetypes as the main framework and the supporting signals as evidence.
+Be specific about numbers, directions, elements, personal year themes, compatibility, and feng shui alerts.
+Never invent chart data or contradict the provided archetypes.
+Max 130 words.`;
 
     const messages: Array<{ role: 'system' | 'user' | 'assistant'; content: string }> = [
       {
@@ -44,13 +71,13 @@ export async function POST(request: NextRequest) {
     if (!history || history.length === 0) {
       messages.push({
         role: 'user',
-        content: `Chart Context:\n${JSON.stringify(chartContext)}`, // Also remove pretty-print
+        content: `ARCHETYPES:\n${JSON.stringify(chartContext.archetypes)}\n\nSUPPORTING SIGNALS:\n${JSON.stringify(chartContext.signals)}`,
       });
     } else {
       // Subsequent messages: lightweight reminder
       messages.push({
         role: 'user',
-        content: `[Referring to previously provided chart context for ${chartContext.p1?.name || 'user'}]`,
+        content: `[Referring to previously provided archetypes and interpretation signals for ${getChartSubject(chartContext)}]`,
       });
     }
 

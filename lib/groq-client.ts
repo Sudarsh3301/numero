@@ -14,6 +14,8 @@ function getGroqClient(): Groq {
 export const MODELS = {
   PRIMARY: 'llama-3.1-8b-instant',
   FALLBACK: 'llama-3.3-70b-versatile',
+  STRUCTURED_OUTPUT: 'openai/gpt-oss-20b', // Best for structured JSON output with strict mode
+  STRUCTURED_FALLBACK: 'moonshotai/kimi-k2-instruct-0905', // Fallback for structured output (best-effort mode)
 } as const;
 
 export interface GroqError {
@@ -38,20 +40,34 @@ export async function generateWithFallback(
   options?: {
     temperature?: number;
     maxTokens?: number;
-    responseFormat?: { type: 'json_object' };
+    responseFormat?:
+      | { type: 'json_object' }
+      | { type: 'json_schema'; json_schema: any };
+    model?: string; // Allow specifying a specific model
   }
 ): Promise<string> {
-  const { temperature = 1, maxTokens = 2048, responseFormat } = options || {};
+  const {
+    temperature = 1,
+    maxTokens, // No default - let model use what it needs
+    responseFormat,
+    model: preferredModel
+  } = options || {};
 
-  // Try primary model first
+  // Determine if this is a structured output request
+  const isStructuredOutput = responseFormat?.type === 'json_schema' || responseFormat?.type === 'json_object';
+
+  // Use structured output model if JSON format is requested and no specific model is provided
+  const primaryModel = preferredModel || (isStructuredOutput ? MODELS.STRUCTURED_OUTPUT : MODELS.PRIMARY);
+
+  // Try primary/preferred model first
   try {
-    console.log(`[Groq] Attempting primary model: ${MODELS.PRIMARY}`);
+    console.log(`[Groq] Attempting model: ${primaryModel}`);
     const groq = getGroqClient();
     const response = await groq.chat.completions.create({
-      model: MODELS.PRIMARY,
+      model: primaryModel,
       messages,
       temperature,
-      max_tokens: maxTokens,
+      ...(maxTokens && { max_tokens: maxTokens }), // Only set if provided
       ...(responseFormat && { response_format: responseFormat }),
     });
 
@@ -60,53 +76,61 @@ export async function generateWithFallback(
       throw new Error('Empty response from Groq');
     }
 
-    console.log(`[Groq] Success with primary model`);
+    console.log(`[Groq] Success with model: ${primaryModel}`);
     return content;
   } catch (primaryError: any) {
-    console.warn(`[Groq] Primary model failed:`, primaryError.message);
+    console.warn(`[Groq] Model ${primaryModel} failed:`, primaryError.status || 'unknown', primaryError.message);
 
-    // If rate limited, try fallback model
-    if (isRateLimitError(primaryError)) {
-      console.log(`[Groq] Rate limited on primary, trying fallback: ${MODELS.FALLBACK}`);
+    // IMPROVED: Try fallback model on ANY error, not just rate limits
+    // This handles: JSON validation errors, schema violations, timeouts, provider errors
+    const fallbackModel = isStructuredOutput ? MODELS.STRUCTURED_FALLBACK : MODELS.FALLBACK;
+    console.log(`[Groq] Primary model failed, attempting fallback: ${fallbackModel}`);
 
-      try {
-        const groq = getGroqClient();
-        const response = await groq.chat.completions.create({
-          model: MODELS.FALLBACK,
-          messages,
-          temperature,
-          max_tokens: maxTokens,
-          ...(responseFormat && { response_format: responseFormat }),
-        });
+    try {
+      const groq = getGroqClient();
 
-        const content = response.choices[0]?.message?.content;
-        if (!content) {
-          throw new Error('Empty response from Groq fallback');
-        }
+      // For structured output fallback, use best-effort mode (strict: false)
+      let fallbackResponseFormat = responseFormat;
+      if (isStructuredOutput && responseFormat?.type === 'json_schema') {
+        fallbackResponseFormat = {
+          type: 'json_schema',
+          json_schema: {
+            ...responseFormat.json_schema,
+            strict: false, // Best-effort mode for fallback
+          },
+        };
+      }
 
-        console.log(`[Groq] Success with fallback model`);
-        return content;
-      } catch (fallbackError: any) {
-        console.error(`[Groq] Fallback model also failed:`, fallbackError.message);
+      const response = await groq.chat.completions.create({
+        model: fallbackModel,
+        messages,
+        temperature,
+        ...(maxTokens && { max_tokens: maxTokens }), // Only set if provided
+        ...(fallbackResponseFormat && { response_format: fallbackResponseFormat }),
+      });
 
-        // If fallback is also rate limited, throw user-friendly error
-        if (isRateLimitError(fallbackError)) {
-          throw new Error(
-            'Our AI service is experiencing high demand. Please try again in a few moments. (Rate limit reached on all models)'
-          );
-        }
+      const content = response.choices[0]?.message?.content;
+      if (!content) {
+        throw new Error('Empty response from Groq fallback');
+      }
 
-        // Other fallback errors
+      console.log(`[Groq] Success with fallback model: ${fallbackModel}`);
+      return content;
+    } catch (fallbackError: any) {
+      console.error(`[Groq] Fallback model also failed:`, fallbackError.status || 'unknown', fallbackError.message);
+
+      // If fallback is also rate limited, throw user-friendly error
+      if (isRateLimitError(fallbackError)) {
         throw new Error(
-          `AI service temporarily unavailable: ${fallbackError.message}`
+          'Our AI service is experiencing high demand. Please try again in a few moments. (Rate limit reached on all models)'
         );
       }
-    }
 
-    // Non-rate-limit errors from primary
-    throw new Error(
-      `AI service error: ${primaryError.message || 'Unknown error'}`
-    );
+      // Other fallback errors - include both primary and fallback error info
+      throw new Error(
+        `AI service error: Primary (${primaryModel}): ${primaryError.message}; Fallback (${fallbackModel}): ${fallbackError.message}`
+      );
+    }
   }
 }
 
