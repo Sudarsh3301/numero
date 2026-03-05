@@ -62,12 +62,43 @@ export async function POST(request: NextRequest) {
       analysisFormat,
       '',
       'Rules: Use names. Honesty over comfort. 300-360 words total.',
-      '',
-      'IMPORTANT: Respond with ONLY a valid JSON object matching this exact structure:',
-      '{"sections": [{"title": "Section Title", "body": "Analysis text..."}]}',
-      '',
-      'Do not include any markdown, code blocks, or explanatory text. Just the raw JSON object.',
     ].join('\n');
+
+    // Define JSON Schema for structured output
+    const responseSchema = {
+      name: 'numerology_analysis',
+      strict: true,
+      schema: {
+        type: 'object',
+        properties: {
+          sections: {
+            type: 'array',
+            items: {
+              type: 'object',
+              properties: {
+                title: {
+                  type: 'string',
+                  description: 'Section title with emoji (e.g., "🧠 Core Psychological Profile")',
+                },
+                body: {
+                  type: 'string',
+                  description: 'Analysis text for this section',
+                },
+              },
+              required: ['title', 'body'],
+              additionalProperties: false,
+            },
+            description: mode === 'single'
+              ? 'Exactly 5 sections for single person analysis'
+              : 'Exactly 6 sections for relationship analysis',
+            minItems: mode === 'single' ? 5 : 6,
+            maxItems: mode === 'single' ? 5 : 6,
+          },
+        },
+        required: ['sections'],
+        additionalProperties: false,
+      },
+    };
 
     const responseText = await withRetry(
       () => generateWithFallback(
@@ -75,28 +106,19 @@ export async function POST(request: NextRequest) {
         {
           temperature: 1,
           maxTokens: 2048,
-          responseFormat: { type: 'json_object' },
+          responseFormat: {
+            type: 'json_schema',
+            json_schema: responseSchema,
+          },
         }
       ),
       'analyze'
     );
 
-    // Parse and validate JSON response
+    // Parse JSON response (structure is guaranteed by JSON Schema)
     let narrative;
     try {
       narrative = JSON.parse(responseText);
-
-      // Validate structure
-      if (!narrative.sections || !Array.isArray(narrative.sections)) {
-        throw new Error('Invalid response structure');
-      }
-
-      // Ensure all sections have title and body
-      for (const section of narrative.sections) {
-        if (!section.title || !section.body) {
-          throw new Error('Section missing title or body');
-        }
-      }
     } catch (parseError) {
       console.error('JSON parsing failed:', parseError);
       console.error('Response text:', responseText);

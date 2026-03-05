@@ -37,12 +37,22 @@ export async function POST(request: NextRequest) {
       {
         role: 'system',
         content: systemInstruction,
-      },
-      {
-        role: 'user',
-        content: `Chart Context:\n${JSON.stringify(chartContext, null, 2)}`,
-      },
+      }
     ];
+
+    // Only send full context on FIRST message (when history is empty)
+    if (!history || history.length === 0) {
+      messages.push({
+        role: 'user',
+        content: `Chart Context:\n${JSON.stringify(chartContext)}`, // Also remove pretty-print
+      });
+    } else {
+      // Subsequent messages: lightweight reminder
+      messages.push({
+        role: 'user',
+        content: `[Referring to previously provided chart context for ${chartContext.p1?.name || 'user'}]`,
+      });
+    }
 
     // Add conversation history
     if (history && history.length > 0) {

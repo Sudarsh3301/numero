@@ -295,12 +295,12 @@ SINGLE MODE — 5 sections:
 2. "⚡ Blind Spots & Weaknesses" — missing numbers and absent arrows as concrete psychological gaps. No softening.
 3. "🔥 Innate Strengths" — present arrows, Kua element, trigram energy.
 4. "🧭 Growth Directive" — one sharp behavioral instruction.
-5. "📅 2026 Forecast" — weave personal year ${p1?.personalYear} theme, elemental modifier (${p1?.yearElementModifier?.tone}), Ba Zhai directions AND flying star alerts: ${JSON.stringify(p1?.flyingStarAlerts)}. Name specific life domains, risks, opportunities. Unlucky dirs to avoid: Jue Ming ${p1?.baZhai?.unlucky?.jueMing}, Liu Sha ${p1?.baZhai?.unlucky?.liuSha}. Be concrete.
+5. "📅 2026 Forecast" — weave personal year ${p1?.personalYear} theme, elemental modifier (${p1?.yearElementModifier?.tone}), Ba Zhai directions AND flying star alerts (see person data for details). Name specific life domains, risks, opportunities. Unlucky dirs to avoid: Jue Ming ${p1?.baZhai?.unlucky?.jueMing}, Liu Sha ${p1?.baZhai?.unlucky?.liuSha}. Be concrete.
 
 COUPLE MODE — 6 sections:
 1. "🧠 Individual Essences" — psychological type per person, dominant weakness in partnership.
 2. "🔗 Core Alignment" — elemental dynamic, shared lucky directions, complementary strengths.
-3. "⚡ Primary Friction Areas" — control dynamics, number gaps, shared unlucky directions ${JSON.stringify(compat?.sharedUnlucky)}.
+3. "⚡ Primary Friction Areas" — control dynamics, number gaps, shared unlucky directions (see compatibility data).
 4. "📅 Long-Term Outlook" — natural momentum or constant work? What breaks vs. sustains.
 5. "🛠 Behavioral Advice" — 2–3 specific actions from their actual data.
 6. "🔮 2026 Couples Forecast" — both personal years, both elemental modifiers, flying star alerts for each. Will 2026 pull them together or apart?
@@ -631,9 +631,9 @@ const ChatPanel = memo(function ChatPanel({ chartContext, lang }: { chartContext
     setBusy(true);
     try {
       const answer=await fetchFollowUp(q,chartContext,lang,historyRef.current);
-      // Cap history to last 10 messages to prevent unbounded prompt growth
+      // Cap history to last 6 messages (3 turns) to prevent unbounded prompt growth
       const updated=[...historyRef.current,{role:"user",content:q},{role:"assistant",content:answer}];
-      historyRef.current=updated.slice(-10);
+      historyRef.current=updated.slice(-6);
       setMsgs(m=>[...m,{role:"assistant",text:answer}]);
     } catch(e){
       const errorMsg = (e as Error).message;
