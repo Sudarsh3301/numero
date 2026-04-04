@@ -27,6 +27,9 @@ function sumReduce(n) {
   while (n > 9) n = String(n).split("").reduce((a,b) => a + Number(b), 0);
   return n;
 }
+function flatten2D(arr) {
+  return [].concat(...arr);
+}
 function buildCounts(digits) {
   const c = {}; for (let i=1;i<=9;i++) c[i]=0;
   digits.filter(d=>d>0).forEach(d=>c[d]++); return c;
@@ -372,7 +375,16 @@ async function fetchFollowUp(question, chartContext, lang, history) {
     body: JSON.stringify({ question, chartContext, lang, history }),
   });
 
-  const data = await resp.json();
+  const raw = await resp.text();
+  let data: any = {};
+
+  try {
+    data = raw ? JSON.parse(raw) : {};
+  } catch {
+    if (resp.ok) {
+      throw new Error("Invalid response from chat service.");
+    }
+  }
 
   if (!resp.ok) {
     if (resp.status === 429) {
@@ -380,6 +392,10 @@ async function fetchFollowUp(question, chartContext, lang, history) {
     }
 
     throw new Error(data.message || data.answer || `HTTP ${resp.status}`);
+  }
+
+  if (typeof data.answer !== "string" || !data.answer.trim()) {
+    throw new Error("Invalid response from chat service.");
   }
 
   return data.answer;
@@ -400,7 +416,7 @@ const FlyingStarGrid = memo(function FlyingStarGrid({ flyingStars }: { flyingSta
         </div>
       </div>
       <div style={{display:"grid",gridTemplateColumns:"repeat(3,1fr)",gap:6,maxWidth:270,margin:"0 auto"}}>
-        {GRID_PALACE_LAYOUT.flat().map((palace,i)=>{
+        {flatten2D(GRID_PALACE_LAYOUT).map((palace,i)=>{
           const row=Math.floor(i/3), col=i%3;
           const natal=GRID_NATAL[row][col];
           const starData = flyingStars[palace] || { annual: natal };
@@ -509,7 +525,7 @@ const GRID_POS = [[4,9,2],[3,5,7],[8,1,6]];
 const LoShuGrid = memo(function LoShuGrid({ counts, color = "#7c3aed" }: { counts: any; color?: string }) {
   return (
     <div style={{display:"grid",gridTemplateColumns:"repeat(3,1fr)",gap:6,width:192,margin:"0 auto"}}>
-      {GRID_POS.flat().map(n=>{
+      {flatten2D(GRID_POS).map(n=>{
         const c=counts[n]||0;
         return (
           <div key={n} style={{width:58,height:58,borderRadius:10,
@@ -656,7 +672,16 @@ const ChatPanel = memo(function ChatPanel({ chartContext, lang }: { chartContext
   const [busy,setBusy]=useState(false);
   const bottomRef=useRef(null);
   const historyRef=useRef([]);
-  useEffect(()=>{ bottomRef.current?.scrollIntoView({behavior:"smooth"}); },[msgs]);
+  useEffect(()=>{
+    const el = bottomRef.current as any;
+    if (!el || typeof el.scrollIntoView !== "function") return;
+
+    try {
+      el.scrollIntoView({ behavior:"smooth" });
+    } catch {
+      el.scrollIntoView();
+    }
+  },[msgs]);
 
   const send=async()=>{
     const q=input.trim(); if(!q||busy) return;

@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { generateWithFallback } from '@/lib/groq-client';
 import { extractCoupleSignals, extractSignals } from '@/lib/signal-extractor';
 import type { CoupleArchetypes, CoupleSignals, SingleArchetypes } from '@/lib/signal-extractor';
+import { buildSystemInstruction } from '@/lib/numerology/context-builder';
 
 const MAX_RETRIES = 3; // Increased to allow for model variation
 
@@ -122,27 +123,28 @@ function buildArchetypeSchema(mode: AnalysisMode) {
 function buildArchetypePrompt(mode: AnalysisMode, signals: any) {
   if (mode === 'single') {
     return [
-      'You are a psychological profiler analyzing numerology signals to synthesize personality archetypes.',
+      'You are a psychological profiler analyzing Indian numerology signals to synthesize personality archetypes.',
       '',
       'SIGNALS:',
       JSON.stringify(signals, null, 2),
       '',
       'Task: Generate 3 personality archetypes that create a coherent psychological framework:',
-      '1. PRIMARY ARCHETYPE - core identity and default behavior pattern',
-      '2. SECONDARY ARCHETYPE - supporting strengths and complementary traits',
-      '3. SHADOW ARCHETYPE - hidden weaknesses and blind spots',
+      '1. PRIMARY ARCHETYPE - core identity and default behavior pattern (use Driver-Conductor as foundation)',
+      '2. SECONDARY ARCHETYPE - supporting strengths and complementary traits (use ruling planet, arrows, present numbers)',
+      '3. SHADOW ARCHETYPE - hidden weaknesses and blind spots (use missing numbers, karmic debts, absent arrows)',
       '',
       'Guidelines:',
       '- Use psychological language, not mystical vagueness.',
       '- Archetypes must be internally consistent.',
-      '- Reference specific signals: numbers, arrows, elements, directions, and 2026 modifiers.',
+      '- Reference Driver-Conductor combination, ruling planets (Sun, Moon, Jupiter, etc.), Master/Karmic numbers.',
+      '- For missing numbers: 5 is critical (breaks balance), 4 breaks three planes, 6 affects family bonding.',
       '- Keep each description to 1-2 tight sentences.',
       '- Return JSON only using the required schema.',
     ].join('\n');
   }
 
   return [
-    'You are a psychological profiler analyzing numerology signals to synthesize personality archetypes for two people.',
+    'You are a psychological profiler analyzing Indian numerology signals to synthesize personality archetypes for two people.',
     '',
     'PERSON 1 SIGNALS:',
     JSON.stringify((signals as CoupleSignals).person1, null, 2),
@@ -154,14 +156,15 @@ function buildArchetypePrompt(mode: AnalysisMode, signals: any) {
     JSON.stringify((signals as CoupleSignals).compatibility, null, 2),
     '',
     'Task: Generate 3 archetypes for EACH person:',
-    '- PRIMARY: core identity and default behavior pattern',
-    '- SECONDARY: supporting strengths and complementary traits',
-    '- SHADOW: hidden weaknesses and blind spots',
+    '- PRIMARY: core identity and default behavior pattern (Driver-Conductor combination)',
+    '- SECONDARY: supporting strengths and complementary traits (ruling planets, arrows)',
+    '- SHADOW: hidden weaknesses and blind spots (missing numbers, karmic debts)',
     '',
     'Guidelines:',
     '- Use psychological language, not mystical vagueness.',
     '- Each person\'s archetypes must be internally consistent.',
-    '- Reference specific signals: numbers, arrows, elements, directions, and 2026 modifiers.',
+    '- Reference Driver-Conductor compatibility (friend/enemy/neutral planets), Master/Karmic numbers.',
+    '- Note driver_relationship in compatibility: friend=supportive, enemy=conflicting, neutral=independent.',
     '- Keep each description to 1-2 tight sentences.',
     '- Return JSON only using the required schema.',
   ].join('\n');
@@ -176,20 +179,20 @@ function buildNarrativePrompt(
   const narrativeGuidelines = mode === 'single'
     ? [
         'Provide analysis covering:',
-        '1. Core Psychological Profile - use the PRIMARY archetype as the organizing identity.',
-        '2. Innate Strengths - use the SECONDARY archetype, present arrows, Kua element, and plane distribution.',
-        '3. Blind Spots & Weaknesses - use the SHADOW archetype, missing numbers, and absent arrows.',
-        '4. 2026 Forecast - weave personal year, year modifier, directions, and feng shui alerts through the archetype lens.',
-        '5. Growth Directive - one sharp behavioral instruction based on the archetype tensions.',
+        '1. Core Psychological Profile - use PRIMARY archetype. Reference Driver-Conductor combination and ruling planet traits.',
+        '2. Innate Strengths - use SECONDARY archetype. Reference DC strength rating, present arrows, plane distribution.',
+        '3. Blind Spots & Weaknesses - use SHADOW archetype. Focus on missing numbers (especially 5, 4, 6) and absent arrows. Be direct.',
+        '4. 2026 Forecast & Health - weave personal year, health profile (age-based: Driver <40, Conductor ≥40), top 1-2 remedies.',
+        '5. Growth Directive - one sharp behavioral instruction based on archetype tensions and DC combination.',
       ]
     : [
         'Provide analysis covering:',
-        '1. Individual Essences - use each person\'s PRIMARY archetype and their dominant psychological pattern.',
-        '2. Core Alignment - show how their archetypes and elements support or stabilize each other.',
-        '3. Primary Friction Areas - show where shadow patterns, missing numbers, and shared unlucky directions create tension.',
-        '4. 2026 Couples Forecast - use both personal years, modifiers, directions, and feng shui alerts.',
-        '5. Long-Term Outlook - describe natural momentum versus maintenance burden through the archetype framework.',
-        '6. Behavioral Advice - 2-3 specific actions grounded in their actual signals.',
+        '1. Individual Essences - use each PRIMARY archetype. Reference their Driver-Conductor combinations and ruling planets.',
+        '2. Core Alignment - show how DC compatibility, planet friendship, and complementary strengths create synergy.',
+        '3. Primary Friction Areas - show where planet enemies, missing numbers, shadow patterns create tension.',
+        '4. 2026 Couples Forecast - use both health profiles, personal years. Will year pull them together or apart?',
+        '5. Long-Term Outlook - describe natural momentum vs. constant work through DC compatibility lens.',
+        '6. Behavioral Advice - 2-3 specific actions grounded in their Driver-Conductor data and planet relationships.',
       ];
 
   return [
@@ -218,12 +221,6 @@ export async function POST(request: NextRequest) {
 
     const isHindi = system.includes('Hindi') || system.includes('Devanagari');
 
-    const systemInstruction = `You are a direct, psychologically sharp Feng Shui and Lo Shu numerology analyst. ${
-      isHindi
-        ? 'Respond entirely in Hindi (Devanagari script). Mystical but clear Hindi.'
-        : 'Respond in English.'
-    }`;
-
     const requestPayload = JSON.parse(messages[0]?.content || '{}');
     const person1 = requestPayload.person1 ?? requestPayload.p1;
     const person2 = requestPayload.person2 ?? requestPayload.p2;
@@ -240,6 +237,10 @@ export async function POST(request: NextRequest) {
     }
 
     const mode: AnalysisMode = requestPayload.mode === 'couple' || person2 ? 'relationship' : 'single';
+    const lang = isHindi ? 'hi' : 'en';
+
+    // Use Indian numerology system instruction
+    const systemInstruction = buildSystemInstruction(mode, lang);
     const signals = mode === 'single'
       ? extractSignals(person1)
       : extractCoupleSignals(person1, person2, compatibility);

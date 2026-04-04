@@ -1,5 +1,27 @@
 export interface NumerologySignals {
   name: string;
+
+  // Indian Numerology - PRIMARY
+  driver: number;
+  conductor: number;
+  ruling_planet: string;
+  conductor_planet: string;
+  dc_strength: number | null;
+  dc_professions: string[];
+  dc_affect: string;
+  master_number: { isMaster: boolean; number: number | null; strength: number } | null;
+  karmic_numbers: number[];
+  karmic_meanings: string[];
+
+  // Health & Remedies (NEW)
+  age: number;
+  health_governed_by: 'driver' | 'conductor';
+  health_planet: string;
+  health_issues: string[];
+  top_remedies: string[];
+  element_remedies: string[];
+
+  // Lo Shu Grid
   kua_number: number;
   trigram: string;
   missing_numbers: number[];
@@ -7,7 +29,9 @@ export interface NumerologySignals {
   present_numbers: number[];
   arrows_present: string[];
   arrows_absent: string[];
-  kua_element: string;
+
+  // Planes & Elements (kept for Numero Vastu)
+  kua_element: string; // Now represents "ruling planet element"
   kua_group: string;
   kua_trait: string;
   personal_year: number;
@@ -33,10 +57,20 @@ export interface CoupleSignals {
   person1: NumerologySignals;
   person2: NumerologySignals;
   compatibility: {
+    // Driver-Conductor compatibility (NEW - PRIMARY)
+    driver_relationship: string; // friend/enemy/neutral
+    dc_compatibility_score: number;
+
+    // Element/Planet relationship
     element_relation: string;
+    planet_relationship: string;
+
+    // Directional compatibility
     shared_lucky_dirs: string[];
     shared_unlucky_dirs: string[];
     kua_harmony: string;
+
+    // Traditional metrics (kept)
     supports: boolean;
     controls: boolean;
     score: number;
@@ -62,6 +96,21 @@ export interface CoupleArchetypes {
 
 type PersonProfile = {
   name?: string;
+
+  // Indian Numerology (NEW)
+  driver?: number;
+  conductor?: number;
+  rulingPlanet?: { name?: string; element?: string };
+  conductorPlanet?: { name?: string };
+  dcProfile?: { strength?: number | null; professions?: string[]; affect?: string; warnings?: string };
+  masterNumber?: { isMaster?: boolean; number?: number | null; strength?: number };
+  karmicNumbers?: { hasKarmic?: boolean; numbers?: number[]; meanings?: string[] };
+  age?: number;
+  healthProfile?: { planet?: string; issues?: string[]; lifestyle?: string };
+  activeRemedies?: Array<{ action?: string; frequency?: string }>;
+  elementRemedies?: Array<{ remedy?: string }>;
+
+  // Existing fields
   kua?: number;
   trigram?: string;
   element?: string;
@@ -81,6 +130,12 @@ type PersonProfile = {
 };
 
 type CompatibilityProfile = {
+  // Indian Numerology (NEW)
+  driverRelationship?: string;
+  dcCompatibilityScore?: number;
+  planetRelationship?: string;
+
+  // Existing
   elementRelation?: string;
   sharedLucky?: string[];
   sharedUnlucky?: string[];
@@ -118,8 +173,45 @@ export function extractSignals(profile: PersonProfile): NumerologySignals {
   const luckyDirections = recordValues(profile.baZhai?.lucky);
   const unluckyDirections = recordValues(profile.baZhai?.unlucky);
 
+  // Extract Indian numerology data
+  const driver = profile.driver || 0;
+  const conductor = profile.conductor || 0;
+  const age = profile.age || 0;
+  const healthGovernedBy = age < 40 ? 'driver' : 'conductor';
+
   return {
     name: profile.name || 'Person',
+
+    // Indian Numerology - PRIMARY
+    driver,
+    conductor,
+    ruling_planet: profile.rulingPlanet?.name || '',
+    conductor_planet: profile.conductorPlanet?.name || '',
+    dc_strength: profile.dcProfile?.strength ?? null,
+    dc_professions: profile.dcProfile?.professions || [],
+    dc_affect: profile.dcProfile?.affect || '',
+    master_number: profile.masterNumber?.isMaster ? {
+      isMaster: true,
+      number: profile.masterNumber.number || null,
+      strength: profile.masterNumber.strength || 0
+    } : null,
+    karmic_numbers: profile.karmicNumbers?.numbers || [],
+    karmic_meanings: profile.karmicNumbers?.meanings || [],
+
+    // Health & Remedies
+    age,
+    health_governed_by: healthGovernedBy,
+    health_planet: profile.healthProfile?.planet || '',
+    health_issues: profile.healthProfile?.issues || [],
+    top_remedies: (profile.activeRemedies || [])
+      .slice(0, 5)
+      .map(r => r.action || '')
+      .filter(Boolean),
+    element_remedies: (profile.elementRemedies || [])
+      .map(r => r.remedy || '')
+      .filter(Boolean),
+
+    // Lo Shu Grid
     kua_number: profile.kua || 0,
     trigram: profile.trigram || '',
     missing_numbers: profile.missing || [],
@@ -127,7 +219,9 @@ export function extractSignals(profile: PersonProfile): NumerologySignals {
     present_numbers: profile.present || [],
     arrows_present: profile.arrows?.present || [],
     arrows_absent: profile.arrows?.absent || [],
-    kua_element: profile.element || '',
+
+    // Planes & Elements (kept for Numero Vastu)
+    kua_element: profile.element || profile.rulingPlanet?.element || '',
     kua_group: profile.group || '',
     kua_trait: profile.trait || '',
     personal_year: profile.personalYear || 0,
@@ -159,13 +253,23 @@ export function extractCoupleSignals(
     person1: extractSignals(person1),
     person2: extractSignals(person2),
     compatibility: {
+      // Driver-Conductor compatibility (NEW - PRIMARY)
+      driver_relationship: compatibility.driverRelationship || compatibility.planetRelationship || 'neutral',
+      dc_compatibility_score: compatibility.dcCompatibilityScore || compatibility.score || 0,
+
+      // Element/Planet relationship
       element_relation: compatibility.elementRelation || 'Neutral',
+      planet_relationship: compatibility.planetRelationship || 'neutral',
+
+      // Directional compatibility
       shared_lucky_dirs: compatibility.sharedLucky || [],
       shared_unlucky_dirs: compatibility.sharedUnlucky || [],
       kua_harmony: compatibility.sameGroup ? 'harmonious' : 'complementary',
+
+      // Traditional metrics (kept)
       supports: Boolean(compatibility.supports),
       controls: Boolean(compatibility.controls),
-      score: compatibility.score || 0,
+      score: compatibility.score || compatibility.dcCompatibilityScore || 0,
       same_group: Boolean(compatibility.sameGroup),
     },
   };
