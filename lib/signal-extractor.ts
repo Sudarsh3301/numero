@@ -1,3 +1,7 @@
+import { getPlanetDay } from './numerology/planet-days';
+import { getPersonalYearEffect } from './numerology/personal-year';
+import { analyzeComplementary } from './numerology/complementary';
+
 export interface NumerologySignals {
   name: string;
 
@@ -13,7 +17,7 @@ export interface NumerologySignals {
   karmic_numbers: number[];
   karmic_meanings: string[];
 
-  // Health & Remedies (NEW)
+  // Health & Remedies
   age: number;
   health_governed_by: 'driver' | 'conductor';
   health_planet: string;
@@ -22,29 +26,42 @@ export interface NumerologySignals {
   element_remedies: string[];
 
   // Lo Shu Grid
-  kua_number: number;
-  trigram: string;
   missing_numbers: number[];
   dominant_numbers: number[];
   present_numbers: number[];
   arrows_present: string[];
   arrows_absent: string[];
 
-  // Planes & Elements (kept for Numero Vastu)
-  kua_element: string; // Now represents "ruling planet element"
-  kua_group: string;
-  kua_trait: string;
+  // Personal Year
   personal_year: number;
   personal_year_theme: string;
-  year_modifier: string;
-  year_relation: string;
-  directional_energy: {
-    lucky_primary: string;
-    unlucky_primary: string;
-    lucky_directions: string[];
-    unlucky_directions: string[];
+  personal_year_effect: {
+    year: number;
+    name: string;
+    type: string;
+    guidance: string;
+    is_blessing_year: boolean;
   };
-  feng_shui_alerts: string[];
+
+  // Planet Days & Colors (NEW)
+  planet_day_info: {
+    driver_day: string;
+    conductor_day: string;
+    driver_colors_use: string[];
+    driver_colors_avoid: string[];
+    conductor_colors_use: string[];
+    conductor_colors_avoid: string[];
+  };
+
+  // Complementary Numbers (NEW)
+  complementary_support: Array<{
+    missing_number: number;
+    complements_needed: number[];
+    complements_present: number[];
+    support_level: string;
+  }>;
+
+  // Plane Distribution
   plane_distribution: {
     intellectual: number;
     emotional: number;
@@ -57,24 +74,12 @@ export interface CoupleSignals {
   person1: NumerologySignals;
   person2: NumerologySignals;
   compatibility: {
-    // Driver-Conductor compatibility (NEW - PRIMARY)
+    // Driver-Conductor compatibility - PRIMARY
     driver_relationship: string; // friend/enemy/neutral
     dc_compatibility_score: number;
 
-    // Element/Planet relationship
-    element_relation: string;
+    // Planet relationship
     planet_relationship: string;
-
-    // Directional compatibility
-    shared_lucky_dirs: string[];
-    shared_unlucky_dirs: string[];
-    kua_harmony: string;
-
-    // Traditional metrics (kept)
-    supports: boolean;
-    controls: boolean;
-    score: number;
-    same_group: boolean;
   };
 }
 
@@ -97,7 +102,7 @@ export interface CoupleArchetypes {
 type PersonProfile = {
   name?: string;
 
-  // Indian Numerology (NEW)
+  // Indian Numerology
   driver?: number;
   conductor?: number;
   rulingPlanet?: { name?: string; element?: string };
@@ -110,74 +115,42 @@ type PersonProfile = {
   activeRemedies?: Array<{ action?: string; frequency?: string }>;
   elementRemedies?: Array<{ remedy?: string }>;
 
-  // Existing fields
-  kua?: number;
-  trigram?: string;
-  element?: string;
-  group?: string;
-  trait?: string;
+  // Lo Shu Grid
   missing?: number[];
   repeated?: number[];
   present?: number[];
   personalYear?: number;
   pyTheme?: string;
-  yearElementModifier?: { tone?: string; rel?: string };
   planes?: { intellectual?: number; emotional?: number; practical?: number; dominant?: string };
   arrows?: { present?: string[]; absent?: string[] };
-  baZhai?: { lucky?: Record<string, string>; unlucky?: Record<string, string> };
-  flyingStarAlerts?: string[];
-  flyingStars?: Record<string, any>;
 };
 
 type CompatibilityProfile = {
-  // Indian Numerology (NEW)
+  // Indian Numerology
   driverRelationship?: string;
   dcCompatibilityScore?: number;
   planetRelationship?: string;
-
-  // Existing
-  elementRelation?: string;
-  sharedLucky?: string[];
-  sharedUnlucky?: string[];
-  sameGroup?: boolean;
-  supports?: boolean;
-  controls?: boolean;
-  score?: number;
 };
 
-function recordValues(record?: Record<string, string>): string[] {
-  return Object.values(record || {}).filter(Boolean);
-}
-
-export function extractFengShuiAlerts(
-  flyingStarsOrAlerts?: string[] | Record<string, any>
-): string[] {
-  if (!flyingStarsOrAlerts) return [];
-
-  if (Array.isArray(flyingStarsOrAlerts)) {
-    return flyingStarsOrAlerts.filter(Boolean);
-  }
-
-  return Object.entries(flyingStarsOrAlerts)
-    .filter(([palace]) => palace !== '_centerStar')
-    .flatMap(([palace, data]) => {
-      if (!data || typeof data !== 'object') return [];
-      if (typeof data.danger === 'string' && data.danger) {
-        return [`${palace}: ${data.danger}`];
-      }
-      return [];
-    });
-}
-
 export function extractSignals(profile: PersonProfile): NumerologySignals {
-  const luckyDirections = recordValues(profile.baZhai?.lucky);
-  const unluckyDirections = recordValues(profile.baZhai?.unlucky);
-
   // Extract Indian numerology data
   const driver = profile.driver || 0;
   const conductor = profile.conductor || 0;
   const age = profile.age || 0;
   const healthGovernedBy = age < 40 ? 'driver' : 'conductor';
+  const missing = profile.missing || [];
+  const present = profile.present || [];
+  const personalYear = profile.personalYear || 0;
+
+  // Get planet day information
+  const driverDayInfo = getPlanetDay(driver);
+  const conductorDayInfo = getPlanetDay(conductor);
+
+  // Get personal year effect
+  const pyEffect = getPersonalYearEffect(personalYear);
+
+  // Analyze complementary numbers
+  const complementaryAnalysis = analyzeComplementary(missing, present);
 
   return {
     name: profile.name || 'Person',
@@ -212,29 +185,42 @@ export function extractSignals(profile: PersonProfile): NumerologySignals {
       .filter(Boolean),
 
     // Lo Shu Grid
-    kua_number: profile.kua || 0,
-    trigram: profile.trigram || '',
-    missing_numbers: profile.missing || [],
+    missing_numbers: missing,
     dominant_numbers: profile.repeated || [],
-    present_numbers: profile.present || [],
+    present_numbers: present,
     arrows_present: profile.arrows?.present || [],
     arrows_absent: profile.arrows?.absent || [],
 
-    // Planes & Elements (kept for Numero Vastu)
-    kua_element: profile.element || profile.rulingPlanet?.element || '',
-    kua_group: profile.group || '',
-    kua_trait: profile.trait || '',
-    personal_year: profile.personalYear || 0,
+    // Personal Year
+    personal_year: personalYear,
     personal_year_theme: profile.pyTheme || '',
-    year_modifier: profile.yearElementModifier?.tone || '',
-    year_relation: profile.yearElementModifier?.rel || '',
-    directional_energy: {
-      lucky_primary: profile.baZhai?.lucky?.shengQi || luckyDirections[0] || '',
-      unlucky_primary: profile.baZhai?.unlucky?.jueMing || unluckyDirections[0] || '',
-      lucky_directions: luckyDirections,
-      unlucky_directions: unluckyDirections,
+    personal_year_effect: {
+      year: pyEffect.year,
+      name: pyEffect.name,
+      type: pyEffect.type,
+      guidance: pyEffect.guidance,
+      is_blessing_year: pyEffect.isBlessingYear,
     },
-    feng_shui_alerts: extractFengShuiAlerts(profile.flyingStarAlerts || profile.flyingStars),
+
+    // Planet Days & Colors
+    planet_day_info: {
+      driver_day: driverDayInfo.day,
+      conductor_day: conductorDayInfo.day,
+      driver_colors_use: driverDayInfo.colorsToUse,
+      driver_colors_avoid: driverDayInfo.colorsToAvoid,
+      conductor_colors_use: conductorDayInfo.colorsToUse,
+      conductor_colors_avoid: conductorDayInfo.colorsToAvoid,
+    },
+
+    // Complementary Numbers
+    complementary_support: complementaryAnalysis.map(item => ({
+      missing_number: item.missing,
+      complements_needed: item.complementsNeeded,
+      complements_present: item.complementsPresent,
+      support_level: item.supportLevel,
+    })),
+
+    // Plane Distribution
     plane_distribution: {
       intellectual: profile.planes?.intellectual || 0,
       emotional: profile.planes?.emotional || 0,
@@ -253,24 +239,12 @@ export function extractCoupleSignals(
     person1: extractSignals(person1),
     person2: extractSignals(person2),
     compatibility: {
-      // Driver-Conductor compatibility (NEW - PRIMARY)
+      // Driver-Conductor compatibility - PRIMARY
       driver_relationship: compatibility.driverRelationship || compatibility.planetRelationship || 'neutral',
-      dc_compatibility_score: compatibility.dcCompatibilityScore || compatibility.score || 0,
+      dc_compatibility_score: compatibility.dcCompatibilityScore || 0,
 
-      // Element/Planet relationship
-      element_relation: compatibility.elementRelation || 'Neutral',
+      // Planet relationship
       planet_relationship: compatibility.planetRelationship || 'neutral',
-
-      // Directional compatibility
-      shared_lucky_dirs: compatibility.sharedLucky || [],
-      shared_unlucky_dirs: compatibility.sharedUnlucky || [],
-      kua_harmony: compatibility.sameGroup ? 'harmonious' : 'complementary',
-
-      // Traditional metrics (kept)
-      supports: Boolean(compatibility.supports),
-      controls: Boolean(compatibility.controls),
-      score: compatibility.score || compatibility.dcCompatibilityScore || 0,
-      same_group: Boolean(compatibility.sameGroup),
     },
   };
 }

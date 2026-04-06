@@ -87,6 +87,53 @@ export interface GeneralRemedy {
 }
 
 // ============================================================================
+// PLANET DAYS & COLORS TYPES
+// ============================================================================
+
+export interface PlanetDay {
+  planet: string;
+  number: number;
+  day: string;
+  colorsToAvoid: string[];
+  colorsToUse: string[];
+}
+
+// ============================================================================
+// PERSONAL YEAR TYPES
+// ============================================================================
+
+export type PersonalYearType = 'blessing' | 'testing' | 'no-risk' | 'judgment' | 'completion';
+
+export interface PersonalYearEffect {
+  year: number;
+  name: string;
+  type: PersonalYearType;
+  effects: string;
+  guidance: string;
+  isBlessingYear: boolean;
+}
+
+// ============================================================================
+// COMPLEMENTARY NUMBERS TYPES
+// ============================================================================
+
+export interface ComplementaryRelation {
+  number: number;
+  complements: number[];
+  note: string;
+}
+
+export type SupportLevel = 'full' | 'partial' | 'none';
+
+export interface ComplementaryAnalysis {
+  missing: number;
+  complementsNeeded: number[];
+  complementsPresent: number[];
+  isSupported: boolean;
+  supportLevel: SupportLevel;
+}
+
+// ============================================================================
 // COMPATIBILITY TYPES
 // ============================================================================
 
@@ -181,9 +228,6 @@ export interface NumerologyProfile {
   // Planes & Arrows (existing)
   planes: PlaneScore;
   arrows: ArrowDetection;
-
-  // Kua (for Numero Vastu)
-  kua: number;
 
   // Personal Year (Dasa system)
   personalYear?: number;

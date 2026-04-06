@@ -52,7 +52,7 @@ async function withRetryAndFallback<T>(
   throw lastError;
 }
 
-type AnalysisMode = 'single' | 'relationship';
+type AnalysisMode = 'single' | 'couple';
 
 const archetypeDescriptorSchema = {
   type: 'object',
@@ -236,7 +236,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const mode: AnalysisMode = requestPayload.mode === 'couple' || person2 ? 'relationship' : 'single';
+    const mode: AnalysisMode = requestPayload.mode === 'couple' || person2 ? 'couple' : 'single';
     const lang = isHindi ? 'hi' : 'en';
 
     // Use Indian numerology system instruction
