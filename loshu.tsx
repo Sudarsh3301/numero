@@ -89,7 +89,9 @@ function detectArrows(counts) {
 
 
 function calcPersonalYear(dob) {
-  const [,mo,dy] = dob.split("-").map(Number);
+  const parts = dob.split("-").map(Number);
+  const dy = parts[0] > 1000 ? parts[2] : parts[0];
+  const mo = parts[1];
   return sumReduce(dy + mo + sumReduce(2026));
 }
 

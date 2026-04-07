@@ -5,6 +5,14 @@
 
 import type { MasterNumberResult, KarmicNumberResult } from './types';
 
+export function parseDateParts(dob: string): { day: number; month: number; year: number } {
+  const parts = dob.split(/[-/]/).map(Number);
+  if (parts[0] > 1000) {
+    return { year: parts[0], month: parts[1], day: parts[2] };
+  }
+  return { day: parts[0], month: parts[1], year: parts[2] };
+}
+
 /**
  * Reduces a number to single digit (1-9) using numerological reduction
  * @example sumReduce(38) → 3+8 = 11 → 1+1 = 2
@@ -24,7 +32,7 @@ export function sumReduce(n: number): number {
  * @example "18/04/1986" → 18 → 1+8 = 9
  */
 export function calculateDriver(dob: string): number {
-  const [day] = dob.split(/[-/]/).map(Number);
+  const { day } = parseDateParts(dob);
   return sumReduce(day);
 }
 
@@ -99,7 +107,7 @@ function calculateHorizontalMaster(dob: string): 11 | 22 | 33 | null {
  *   2  2  1  0  = 22+10 = 32 or check columnar pattern
  */
 function calculateVerticalMaster(dob: string): 11 | 22 | 33 | null {
-  const [day, month, year] = dob.split(/[-/]/).map(Number);
+  const { day, month, year } = parseDateParts(dob);
 
   // Split into digits
   const dayDigits = String(day).padStart(2, '0').split('').map(Number);
@@ -140,7 +148,7 @@ function calculateVerticalMaster(dob: string): 11 | 22 | 33 | null {
  * Checks both driver and conductor
  */
 export function detectKarmicNumber(dob: string): KarmicNumberResult {
-  const [day, month, year] = dob.split(/[-/]/).map(Number);
+  const { day, month, year } = parseDateParts(dob);
   const karmicNumbers: number[] = [];
 
   // Check day
@@ -204,7 +212,7 @@ function getKarmicMeaning(num: number): string {
  * Used to determine health governance (Driver <40, Conductor ≥40)
  */
 export function calculateAge(dob: string): number {
-  const [day, month, year] = dob.split(/[-/]/).map(Number);
+  const { day, month, year } = parseDateParts(dob);
   const birthDate = new Date(year, month - 1, day);
   const today = new Date();
 
