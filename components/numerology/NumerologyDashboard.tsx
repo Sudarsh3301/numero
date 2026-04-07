@@ -11,6 +11,7 @@ import { RemediesCard } from './RemediesCard';
 import { PersonalYearCard } from './PersonalYearCard';
 import { ChatPanel } from './ChatPanel';
 import { HealthCard } from './HealthCard'; // Might be needed
+import { RepetitionCard } from './RepetitionCard';
 
 interface NumerologyDashboardProps {
   profile: any; // Single person math-layer profile
@@ -97,6 +98,11 @@ export const NumerologyDashboard = memo(function NumerologyDashboard({
             <div className="w-full bg-black/10 rounded-2xl">
               <ArrowsPanel arrows={profile.arrows} />
             </div>
+            {profile.repetitionEffects?.length > 0 && (
+              <div className="w-full mt-2">
+                <RepetitionCard effects={profile.repetitionEffects} />
+              </div>
+            )}
           </div>
           
         </div>

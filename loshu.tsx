@@ -16,6 +16,7 @@ import type { DCCombination, HealthProfile, Remedy } from "@/lib/numerology/type
 
 import { PersonForm } from '@/components/forms/PersonForm';
 import { NumerologyDashboard } from '@/components/numerology/NumerologyDashboard';
+import { PartnershipScoreCard } from '@/components/numerology/PartnershipScoreCard';
 
 type NarrativePayload = {
   narrative: { sections?: any[]; status?: string };
@@ -398,6 +399,10 @@ export default function App() {
       {R&&(
         <div style={{ display: "flex", flexDirection: "column", gap: 32, width: "100%", alignItems: "center" }}>
           
+          {mode === "couple" && R.m2 && (
+            <PartnershipScoreCard m1={R.m1} m2={R.m2} />
+          )}
+
           <NumerologyDashboard 
             profile={R.m1} 
             label={R.m1.name || "Person 1"} 
