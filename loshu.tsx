@@ -14,19 +14,8 @@ import { getPersonalYearEffect } from "@/lib/numerology/personal-year";
 import { analyzeComplementary } from "@/lib/numerology/complementary";
 import type { DCCombination, HealthProfile, Remedy } from "@/lib/numerology/types";
 
-// Imported Solarpunk components
-import { LoShuGrid } from '@/components/numerology/LoShuGrid';
-import { DriverConductorCard } from '@/components/numerology/DriverConductorCard';
-import { ComplementaryCard } from '@/components/numerology/ComplementaryCard';
-import { PlanetDayCard } from '@/components/numerology/PlanetDayCard';
-import { PersonalYearCard } from '@/components/numerology/PersonalYearCard';
-import { ArrowsPanel } from '@/components/numerology/ArrowsPanel';
-import { PlaneBar } from '@/components/numerology/PlaneBar';
-import { NarrativeCard } from '@/components/numerology/NarrativeCard';
-import { ChatPanel } from '@/components/numerology/ChatPanel';
-import { HealthCard } from '@/components/numerology/HealthCard';
-import { RemediesCard } from '@/components/numerology/RemediesCard';
 import { PersonForm } from '@/components/forms/PersonForm';
+import { NumerologyDashboard } from '@/components/numerology/NumerologyDashboard';
 
 type NarrativePayload = {
   narrative: { sections?: any[]; status?: string };
@@ -405,111 +394,27 @@ export default function App() {
       }}>{loading?"✨ Consulting the stars…":"✨ Reveal My Numbers"}</button>
 
       {R&&(
-        <div style={{display:"flex",flexDirection:"column",gap:12}}>
+        <div style={{ display: "flex", flexDirection: "column", gap: 32, width: "100%", alignItems: "center" }}>
+          
+          <NumerologyDashboard 
+            profile={R.m1} 
+            label={R.m1.name || "Person 1"} 
+            color={k1c} 
+            narrative={mode === "single" ? R.narrative : null} 
+            chatProps={mode === "single" ? { chartContext: chartCtx, lang, fetchFollowUp } : undefined}
+          />
 
-          {/* Driver-Conductor Cards — THE FOUNDATION */}
-          <div style={{display:"flex",gap:10}}>
-            <div style={{flex:1}}>
-              <DriverConductorCard m={R.m1} label={R.m1.name||"Person 1"} color={k1c}/>
-            </div>
-            {R.m2&&(
-              <div style={{flex:1}}>
-                <DriverConductorCard m={R.m2} label={R.m2.name||"Person 2"} color={k2c}/>
-              </div>
-            )}
-          </div>
+          {R.m2 && (
+            <NumerologyDashboard 
+              profile={R.m2} 
+              label={R.m2.name || "Person 2"} 
+              color={k2c} 
+              narrative={mode === "couple" ? R.narrative : null} 
+              chatProps={mode === "couple" ? { chartContext: chartCtx, lang, fetchFollowUp } : undefined}
+            />
+          )}
 
-          {/* Personal Lo Shu Grids */}
-          <div style={{display:"flex",gap:10}}>
-            {[{m:R.m1,c:k1c,label:R.m1.name||"Person 1"},R.m2&&{m:R.m2,c:k2c,label:R.m2.name||"Person 2"}].filter(Boolean).map((p,i)=>(
-              <div key={i} style={{flex:1,background:"rgba(255,255,255,0.04)",borderRadius:16,padding:13}}>
-                <div style={{fontSize:11,color:"rgba(255,255,255,0.4)",textAlign:"center",marginBottom:8}}>{p.label} · Lo Shu</div>
-                <LoShuGrid counts={p.m.counts} color={p.c}/>
-                <div style={{display:"flex",justifyContent:"space-around",marginTop:9}}>
-                  {[{l:"Missing",v:p.m.missing,c:"var(--color-leaf-400)"},{l:"Strong",v:p.m.repeated,c:"var(--color-mystic-400)"}].map(({l,v,c})=>(
-                    <div key={l} style={{textAlign:"center"}}>
-                      <div style={{fontSize:9,color:"rgba(255,255,255,0.3)",marginBottom:2}}>{l}</div>
-                      <div style={{fontSize:11,color:c}}>{v.length?v.join(" "):"—"}</div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            ))}
-          </div>
-
-          {/* Complementary Support */}
-          <div style={{display:"flex",gap:10}}>
-            {[{m:R.m1,label:R.m1.name||"Person 1"},R.m2&&{m:R.m2,label:R.m2.name||"Person 2"}].filter(Boolean).map((p,i)=>(
-              <div key={i} style={{flex:1}}>
-                <ComplementaryCard missing={p.m.missing} present={p.m.present} label={p.label}/>
-              </div>
-            ))}
-          </div>
-
-          {/* Planet Days & Colors */}
-          <div style={{display:"flex",gap:10}}>
-            {[{m:R.m1,label:R.m1.name||"Person 1"},R.m2&&{m:R.m2,label:R.m2.name||"Person 2"}].filter(Boolean).map((p,i)=>(
-              <div key={i} style={{flex:1}}>
-                <PlanetDayCard
-                  driver={p.m.driver}
-                  conductor={p.m.conductor}
-                  driverPlanet={p.m.rulingPlanet.name}
-                  conductorPlanet={p.m.conductorPlanet.name}
-                  label={p.label}
-                />
-              </div>
-            ))}
-          </div>
-
-          {/* Personal Year 2026 */}
-          <div style={{display:"flex",gap:10}}>
-            {[{m:R.m1,label:R.m1.name||"Person 1"},R.m2&&{m:R.m2,label:R.m2.name||"Person 2"}].filter(Boolean).map((p,i)=>(
-              <div key={i} style={{flex:1}}>
-                <PersonalYearCard personalYear={p.m.personalYear} label={p.label}/>
-              </div>
-            ))}
-          </div>
-
-          {/* Planes + Arrows */}
-          {[{m:R.m1,label:R.m1.name||"P1"},R.m2&&{m:R.m2,label:R.m2.name||"P2"}].filter(Boolean).map((p,i)=>(
-            <div key={i} style={{display:"flex",gap:10}}>
-              <div style={{flex:1}}><PlaneBar planes={p.m.planes}/></div>
-              <div style={{flex:1}}><ArrowsPanel arrows={p.m.arrows}/></div>
-            </div>
-          ))}
-
-          {/* Health Profiles */}
-          <div style={{display:"flex",gap:10}}>
-            <div style={{flex:1}}>
-              <HealthCard health={R.m1.healthProfile} age={R.m1.age} label={R.m1.name||"Person 1"}/>
-            </div>
-            {R.m2&&(
-              <div style={{flex:1}}>
-                <HealthCard health={R.m2.healthProfile} age={R.m2.age} label={R.m2.name||"Person 2"}/>
-              </div>
-            )}
-          </div>
-
-          {/* Remedies */}
-          <div style={{display:"flex",gap:10}}>
-            <div style={{flex:1}}>
-              <RemediesCard remedies={R.m1.remedies} label={R.m1.name||"Person 1"}/>
-            </div>
-            {R.m2&&(
-              <div style={{flex:1}}>
-                <RemediesCard remedies={R.m2.remedies} label={R.m2.name||"Person 2"}/>
-              </div>
-            )}
-          </div>
-
-
-          {/* AI Narrative */}
-          {R.narrative?.sections&&<NarrativeCard sections={R.narrative.sections}/>}
-
-          {/* Follow-up Chat */}
-          <ChatPanel chartContext={chartCtx} lang={lang} fetchFollowUp={fetchFollowUp}/>
-
-          <div style={{textAlign:"center",fontSize:10,color:"rgba(255,255,255,0.18)"}}>
+          <div style={{textAlign:"center",fontSize:10,color:"rgba(255,255,255,0.18)",marginTop:24}}>
             For entertainment · Classical Feng Shui, Lo Shu & Xuan Kong Fei Xing
           </div>
         </div>
