@@ -17,6 +17,7 @@ interface NumerologyDashboardProps {
   narrative?: any;
   label?: string;
   color?: string;
+  isSingle?: boolean;
   // To allow chat optionally if we only render one chat
   chatProps?: {
     chartContext: any;
@@ -30,6 +31,7 @@ export const NumerologyDashboard = memo(function NumerologyDashboard({
   narrative,
   label = "Person",
   color = "#a855f7",
+  isSingle = false,
   chatProps,
 }: NumerologyDashboardProps) {
   const { selectedNumber, setSelectedNumber } = useNumerologyStore();
@@ -53,7 +55,7 @@ export const NumerologyDashboard = memo(function NumerologyDashboard({
       
       {/* SECTION 1: HERO */}
       <section className="flex flex-col gap-6">
-        <h2 className="text-xl font-bold text-white/50">{label} Dashboard</h2>
+        {!isSingle && <h2 className="text-xl font-bold text-white/50">{label} Dashboard</h2>}
         <div className="grid grid-cols-1 md:grid-cols-[45%_55%] gap-6 md:gap-10 items-stretch">
           
           <div className="order-1 md:col-start-2 md:row-start-1 w-full">

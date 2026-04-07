@@ -402,6 +402,7 @@ export default function App() {
             color={k1c} 
             narrative={mode === "single" ? R.narrative : null} 
             chatProps={mode === "single" ? { chartContext: chartCtx, lang, fetchFollowUp } : undefined}
+            isSingle={mode === "single"}
           />
 
           {R.m2 && (
@@ -411,6 +412,7 @@ export default function App() {
               color={k2c} 
               narrative={mode === "couple" ? R.narrative : null} 
               chatProps={mode === "couple" ? { chartContext: chartCtx, lang, fetchFollowUp } : undefined}
+              isSingle={false}
             />
           )}
 

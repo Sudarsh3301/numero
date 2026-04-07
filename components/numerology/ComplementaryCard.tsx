@@ -32,50 +32,60 @@ export const ComplementaryCard = memo(function ComplementaryCard({
   const partialSupport = analysis.filter(i => i.supportLevel === 'partial');
   const fullSupport = analysis.filter(i => i.supportLevel === 'full');
 
-  const getGroupStyles = (type: string) => {
-    switch (type) {
-      case 'none': return { border: 'border-red-500/50', bg: 'bg-red-500/10', titleColor: 'text-red-400' };
-      case 'partial': return { border: 'border-yellow-500/50', bg: 'bg-yellow-500/10', titleColor: 'text-yellow-400' };
-      case 'full': return { border: 'border-green-500/50', bg: 'bg-green-500/10', titleColor: 'text-green-400' };
-      default: return { border: 'border-white/10', bg: 'bg-white/5', titleColor: 'text-white' };
-    }
-  };
-
   const renderGroup = (title: string, items: typeof analysis, type: string) => {
     if (items.length === 0) return null;
-    const styles = getGroupStyles(type);
+    
+    const isMissing = type === 'none';
+    const isPartial = type === 'partial';
+
+    const titleColor = isMissing ? 'text-red-400' : isPartial ? 'text-yellow-400' : 'text-green-400';
+    const itemBorder = isMissing ? 'border-red-500/20 hover:border-red-500/40' : isPartial ? 'border-yellow-500/20 hover:border-yellow-500/40' : 'border-green-500/20 hover:border-green-500/40';
+    const itemBg = isMissing ? 'bg-red-500/[0.03]' : isPartial ? 'bg-yellow-500/[0.03]' : 'bg-green-500/[0.03]';
 
     return (
-      <div className="bg-white/[0.04] rounded-xl p-5 border border-white/5">
-        <div className={cn("text-[13px] font-bold mb-4", styles.titleColor)}>
+      <div className="flex flex-col items-center w-full mb-8 last:mb-0">
+        <div className={cn("text-[13px] font-bold mb-4 uppercase tracking-wider text-center", titleColor)}>
           {title}
         </div>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-x-6 gap-y-4 w-full justify-items-center">
           {items.map((item, idx) => (
             <div
               key={idx}
-              className={cn("flex items-center justify-between px-4 py-3 rounded-lg border", styles.bg, styles.border)}
+              className={cn(
+                "flex items-center gap-3 px-3 py-2.5 rounded-xl border w-full max-w-[240px] transition-colors",
+                itemBg, 
+                itemBorder
+              )}
             >
-              {/* Missing Number Pill */}
-              <div className="w-8 h-8 rounded-md bg-red-500/20 border border-red-400/50 flex items-center justify-center text-[14px] font-bold text-red-300">
+              {/* Missing Number indicator (Problem) */}
+              <div className={cn(
+                "flex-shrink-0 flex items-center justify-center w-8 h-8 text-[14px] font-bold shadow-inner rounded-[10px]",
+                isMissing ? "bg-red-500/20 border border-red-500/40 text-red-200" :
+                isPartial ? "bg-yellow-500/20 border border-yellow-500/40 text-yellow-200" :
+                "bg-green-500/20 border border-green-500/40 text-green-200"
+              )}>
                 {item.missing}
               </div>
 
-              {/* Arrow */}
-              <div className="text-white/30 text-[14px] font-bold mx-2">needs</div>
+              {/* Relationship Arrow (Visual Bridge) */}
+              <div className="flex-shrink-0 text-white/20 flex items-center justify-center">
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M14 5l7 7m0 0l-7 7m7-7H3" />
+                </svg>
+              </div>
 
-              {/* Complements */}
-              <div className="flex gap-1.5">
+              {/* Supporting Numbers (Solution) */}
+              <div className="flex gap-1.5 flex-wrap flex-1">
                 {item.complementsNeeded.map(comp => {
                   const isPresent = item.complementsPresent.includes(comp);
                   return (
                     <div
                       key={comp}
                       className={cn(
-                        "w-8 h-8 rounded-md flex items-center justify-center text-[14px] font-bold",
+                        "w-7 h-7 rounded flex items-center justify-center text-[12px] font-bold transition-all",
                         isPresent
-                          ? "bg-leaf-400/20 border border-leaf-400 text-leaf-400"
-                          : "bg-white/5 border border-white/10 text-white/30"
+                          ? "bg-white/10 border border-white/20 text-white shadow-[0_1px_3px_rgba(0,0,0,0.3)]"
+                          : "bg-transparent border border-dashed border-white/20 text-white/30"
                       )}
                     >
                       {comp}
@@ -91,18 +101,18 @@ export const ComplementaryCard = memo(function ComplementaryCard({
   };
 
   return (
-    <div className="flex flex-col gap-6 w-full">
+    <div className="flex flex-col w-full max-w-4xl mx-auto bg-white/[0.02] border border-white/5 rounded-2xl p-5 md:p-8">
       {/* Header and Legend */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 p-4 bg-white/[0.02] rounded-xl border border-white/5">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
         <div>
-          <div className="text-[14px] font-bold text-white/90 mb-1">
+          <div className="text-[15px] font-bold text-white/90 mb-1">
             🔄 Complementary Support · {label}
           </div>
-          <div className="text-[11px] text-white/40">
+          <div className="text-[12px] text-white/50">
             Which present numbers can support missing ones
           </div>
         </div>
-        <div className="flex gap-3 text-[11px] font-bold bg-black/20 p-2 px-3 rounded-lg">
+        <div className="flex gap-3 text-[11px] font-bold bg-black/30 px-3 py-2.5 rounded-xl border border-white/5 shadow-inner">
           <span className="text-red-400">❌ Missing</span>
           <span className="text-white/20">|</span>
           <span className="text-yellow-400">⚠ Partial</span>
@@ -111,13 +121,15 @@ export const ComplementaryCard = memo(function ComplementaryCard({
         </div>
       </div>
 
-      {renderGroup("❌ Missing (No Support)", missingSupport, 'none')}
-      {renderGroup("⚠ Partial Support", partialSupport, 'partial')}
-      {renderGroup("✅ Fully Supported", fullSupport, 'full')}
+      <div className="flex flex-col relative w-full">
+        {renderGroup("❌ Missing (No Support)", missingSupport, 'none')}
+        {renderGroup("⚠ Partial Support", partialSupport, 'partial')}
+        {renderGroup("✅ Fully Supported", fullSupport, 'full')}
+      </div>
 
       {present.includes(5) && (
-        <div className="p-3 bg-mystic-purple-500/10 rounded-lg text-[11px] font-medium text-mystic-purple-300 border border-mystic-purple-500/20 text-center">
-          ✨ <strong className="text-white/80">Number 5 present:</strong> Universal support for all numbers - guides towards will, success & prosperity
+        <div className="mt-6 p-4 bg-mystic-purple-500/10 rounded-xl text-[12px] md:text-[13px] font-medium text-mystic-purple-300 border border-mystic-purple-500/20 text-center max-w-2xl mx-auto">
+          ✨ <strong className="text-white/90">Number 5 present:</strong> Universal support for all numbers - guides towards will, success & prosperity
         </div>
       )}
     </div>
