@@ -307,7 +307,7 @@ COUPLE MODE — 6 sections required:
   return `You are an Indian numerology analyst specializing in Driver-Conductor combinations and planetary influences. ${langInstruction}
 
 TERMINOLOGY:
-- Numbers 1-9 correspond to planets: 1=Sun, 2=Moon, 3=Jupiter, 4=Rahu, 5=Mercury, 6=Venus, 7=Ketu, 8=Saturn, 9=Mars
+- Numbers 1-9 correspond to planets: 1=Sun, 2=Moon, 3=Jupiter (Guru), 4=Rahu, 5=Mercury (Budh), 6=Venus (Shukra), 7=Ketu, 8=Saturn (Shani), 9=Mars (Mangal)
 - Driver = sum of birth day digits (primary personality)
 - Conductor = sum of all DOB digits (life path)
 - Master Numbers: 11=Dreamer, 22=Dreamer+Doer, 33=Unconditional Love

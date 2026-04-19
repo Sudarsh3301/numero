@@ -651,7 +651,7 @@ PY=3, PM=4, Date=15/10/2027:
 
 ```
 Birth Date: 15/09/1950   Prediction Date: 30/08/2024
-
+want to 
 PY: 1+5+0+9+2+0+2+4 = 23 = 5
 PM: PY=5, Month=08 → 5+8 = 13 = 5 (or as shown: 14 = 5)
 PD: 5+5+3+0+0+8+2+0+2+4 = 29 = 11 = 8

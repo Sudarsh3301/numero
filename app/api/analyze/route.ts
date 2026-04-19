@@ -4,49 +4,46 @@ import { extractCoupleSignals, extractSignals } from '@/lib/signal-extractor';
 import type { CoupleArchetypes, CoupleSignals, SingleArchetypes } from '@/lib/signal-extractor';
 import { buildSystemInstruction } from '@/lib/numerology/context-builder';
 
-const MAX_RETRIES = 3; // Increased to allow for model variation
+const MAX_RETRIES = 2; // Reduced from 3 since generateWithFallback handles tier cascade
 
-// IMPROVED: Retry with varying conditions instead of repeating the same request
+// SIMPLIFIED: Retry logic now handles network-level failures only
+// Tier cascade and model fallback handled in generateWithFallback()
 async function withRetryAndFallback<T>(
   primaryFn: () => Promise<T>,
-  fallbackFn: (() => Promise<T>) | null,
-  label: string
+  _fallbackFn: (() => Promise<T>) | null,  // Deprecated, kept for compatibility
+  label: string,
+  maxRetries: number = MAX_RETRIES
 ): Promise<T> {
   let lastError: unknown;
 
-  // Attempt 1: Primary function (strict mode)
-  try {
-    console.log(`[${label}] Attempt 1: Primary model with strict mode`);
-    return await primaryFn();
-  } catch (err) {
-    lastError = err;
-    console.warn(`[${label}] Attempt 1 failed:`, (err as Error).message);
-
-    // Wait before retry
-    await new Promise(r => setTimeout(r, 500));
-  }
-
-  // Attempt 2: Fallback function if provided (best-effort mode)
-  if (fallbackFn) {
+  for (let attempt = 1; attempt <= maxRetries; attempt++) {
     try {
-      console.log(`[${label}] Attempt 2: Fallback model with best-effort mode`);
-      return await fallbackFn();
+      console.log(`[${label}] Attempt ${attempt}/${maxRetries}`);
+      return await primaryFn();
     } catch (err) {
       lastError = err;
-      console.warn(`[${label}] Attempt 2 failed:`, (err as Error).message);
+      const errorMessage = (err as Error).message;
+      console.warn(`[${label}] Attempt ${attempt} failed:`, errorMessage);
 
-      // Wait before final retry
-      await new Promise(r => setTimeout(r, 1000));
+      // Don't retry if error indicates complete tier cascade failure
+      if (errorMessage.includes('failed after attempting all fallback tiers')) {
+        console.error(`[${label}] All tiers exhausted, not retrying`);
+        throw err;
+      }
+
+      // Don't retry on certain error types
+      if (errorMessage.includes('Invalid analysis request') ||
+          errorMessage.includes('model_not_found')) {
+        throw err;
+      }
+
+      // Wait before retry (only for network-level failures)
+      if (attempt < maxRetries) {
+        const waitTime = 500 * attempt;
+        console.log(`[${label}] Waiting ${waitTime}ms before retry`);
+        await new Promise(r => setTimeout(r, waitTime));
+      }
     }
-  }
-
-  // Attempt 3: Retry primary one more time
-  try {
-    console.log(`[${label}] Attempt 3: Final retry with primary model`);
-    return await primaryFn();
-  } catch (err) {
-    lastError = err;
-    console.error(`[${label}] All attempts failed`);
   }
 
   throw lastError;
