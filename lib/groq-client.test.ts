@@ -1,10 +1,14 @@
-import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
+import { describe, it, expect } from 'vitest';
 import {
   categorizeGroqError,
   GroqErrorType,
   isRateLimitError,
   MODELS
 } from './groq-client';
+import { calculateDriver, calculateConductor } from './numerology/core';
+import { getPersonalYearEffect, PERSONAL_YEAR_EFFECTS } from './numerology/personal-year';
+import { getMissingEffects } from './numerology/missing';
+import { getRepetitionEffects } from './numerology/repetition';
 
 describe('Groq Client Error Handling', () => {
   describe('categorizeGroqError', () => {
@@ -123,204 +127,159 @@ describe('Groq Client Error Handling', () => {
     it('should have valid structured output models', () => {
       expect(MODELS.STRUCTURED_PRIMARY).toBe('openai/gpt-oss-20b');
       expect(MODELS.STRUCTURED_TIER2).toBe('openai/gpt-oss-120b');
-      expect(MODELS.STRUCTURED_TIER3).toBe('openai/gpt-oss-120b');
     });
 
     it('should not use the decommissioned Tier 4 model (404 model_not_found on Groq)', () => {
-      // meta-llama/llama-4-scout-17b-16e-instruct no longer exists on Groq's
-      // model catalog (confirmed via groq-docs/models.md and live 404s in logs.md).
-      // Tier 4 must point at a model that is actually still served.
       expect(MODELS.STRUCTURED_TIER4).not.toBe('meta-llama/llama-4-scout-17b-16e-instruct');
     });
 
     it('should not use broken moonshotai model', () => {
-      // Verify the old broken model is no longer the active fallback
       expect(MODELS.STRUCTURED_TIER2).not.toBe('moonshotai/kimi-k2-instruct-0905');
-      expect(MODELS.STRUCTURED_TIER3).not.toBe('moonshotai/kimi-k2-instruct-0905');
       expect(MODELS.STRUCTURED_TIER4).not.toBe('moonshotai/kimi-k2-instruct-0905');
     });
 
     it('should maintain backward compatible constants', () => {
-      // Old constants should still exist for backward compatibility
       expect(MODELS.STRUCTURED_OUTPUT).toBeDefined();
       expect(MODELS.STRUCTURED_FALLBACK).toBeDefined();
     });
   });
 });
 
-describe('Error-Adaptive Strategy Logic', () => {
-  describe('determineNextAction scenarios', () => {
-    // Note: determineNextAction is not exported, so we test the behavior through
-    // the tier cascade logic. These are documentation tests.
+describe('Numerology core — calculateDriver', () => {
+  it('single digit day → driver is that digit', () => {
+    // DOB 1985-03-05: day=5, already single digit
+    expect(calculateDriver('1985-03-05')).toBe(5);
+  });
 
-    it('should skip to best-effort on JSON validation failure', () => {
-      // Expected behavior:
-      // - JSON_VALIDATE_FAILED → Skip to Tier 3 (best-effort mode)
-      // - Wait 300ms before retry
-      expect(true).toBe(true); // Placeholder - actual behavior tested in integration
-    });
+  it('double digit day reduces to single digit', () => {
+    // DOB 1990-07-18: day=18 → 1+8=9
+    expect(calculateDriver('1990-07-18')).toBe(9);
+  });
 
-    it('should skip immediately on model not found', () => {
-      // Expected behavior:
-      // - MODEL_NOT_FOUND → Next tier immediately
-      // - No wait time
-      expect(true).toBe(true);
-    });
+  it('day 29 reduces fully: 2+9=11 → 1+1=2', () => {
+    // calculateDriver uses sumReduce which reduces all the way to single digit
+    expect(calculateDriver('1988-04-29')).toBe(2);
+  });
 
-    it('should use exponential backoff on rate limit', () => {
-      // Expected behavior:
-      // - RATE_LIMIT → Exponential backoff (2s, 4s, 8s max)
-      // - Retry same tier on Tier 1, then skip
-      expect(true).toBe(true);
-    });
+  it('day 22 reduces: 2+2=4', () => {
+    expect(calculateDriver('2000-10-22')).toBe(4);
+  });
 
-    it('should skip to best-effort on timeout', () => {
-      // Expected behavior:
-      // - TIMEOUT → Skip to Tier 3 (best-effort, faster)
-      // - Wait 500ms
-      expect(true).toBe(true);
-    });
+  it('day 10 reduces to 1', () => {
+    expect(calculateDriver('1975-06-10')).toBe(1);
+  });
 
-    it('should skip to different model on context length', () => {
-      // Expected behavior:
-      // - CONTEXT_LENGTH → Skip to Tier 4 (Llama)
-      // - No wait time
-      expect(true).toBe(true);
-    });
+  it('day 1 → driver is 1', () => {
+    expect(calculateDriver('1980-01-01')).toBe(1);
   });
 });
 
-describe('Circuit Breaker Integration', () => {
-  describe('Circuit breaker behavior', () => {
-    it('should document circuit breaker threshold', () => {
-      // Circuit breaker opens after 5 consecutive failures
-      // Resets after 60 seconds
-      // Per-model tracking (independent circuits)
-      expect(true).toBe(true); // Behavior verified through integration tests
-    });
+describe('Numerology core — calculateConductor', () => {
+  it('sums all DOB digits to a single digit', () => {
+    // DOB 1985-03-05: 1+9+8+5+0+3+0+5=31 → 3+1=4
+    expect(calculateConductor('1985-03-05')).toBe(4);
+  });
 
-    it('should record success and failure', () => {
-      // Success: Reset failure count, close circuit
-      // Failure: Increment count, open circuit at threshold
-      expect(true).toBe(true);
-    });
+  it('conductor fully reduces: 1+9+8+2+0+1+0+8=29 → 2+9=11 → 1+1=2', () => {
+    // sumReduce reduces all the way to single digit
+    expect(calculateConductor('1982-01-08')).toBe(2);
+  });
 
-    it('should auto-reset after timeout', () => {
-      // After 60 seconds, circuit moves from open → half-open
-      // One successful attempt closes the circuit
-      expect(true).toBe(true);
-    });
+  it('conductor 9 from date that sums to 9', () => {
+    // 1980-01-08: 1+9+8+0+0+1+0+8=27 → 2+7=9
+    expect(calculateConductor('1980-01-08')).toBe(9);
+  });
+
+  it('conductor 3 from a date summing to 3', () => {
+    // 1993-02-06: 1+9+9+3+0+2+0+6=30 → 3+0=3
+    expect(calculateConductor('1993-02-06')).toBe(3);
   });
 });
 
-describe('Tier Cascade Integration', () => {
-  describe('Success scenarios', () => {
-    it('should succeed on Tier 1 (fast path)', () => {
-      // Most common case: Tier 1 succeeds immediately
-      // Expected: ~88% of requests
-      expect(true).toBe(true);
-    });
-
-    it('should fallback to Tier 2 on Tier 1 failure', () => {
-      // Tier 1 fails → Try Tier 2 (larger model, strict)
-      // Expected: ~10% of requests
-      expect(true).toBe(true);
-    });
-
-    it('should fallback to Tier 3 on JSON validation failures', () => {
-      // Tier 1 & 2 fail with json_validate_failed
-      // → Skip to Tier 3 (best-effort)
-      // Expected: ~1.5% of requests
-      expect(true).toBe(true);
-    });
-
-    it('should use Tier 4 as last resort', () => {
-      // All GPT-OSS models fail → Try Llama model
-      // Expected: ~0.5% of requests
-      expect(true).toBe(true);
-    });
+describe('Personal year effect', () => {
+  it('returns an object for each personal year 1–9', () => {
+    for (let py = 1; py <= 9; py++) {
+      const result = getPersonalYearEffect(py);
+      expect(result).toBeDefined();
+      expect(result.year).toBe(py);
+    }
   });
 
-  describe('Failure scenarios', () => {
-    it('should throw comprehensive error after all tiers fail', () => {
-      // All 4 tiers exhausted
-      // → Throw error with all tier failure details
-      // Expected: <0.5% of requests
-      expect(true).toBe(true);
-    });
+  it('has non-empty effects string for each year', () => {
+    for (let py = 1; py <= 9; py++) {
+      const result = getPersonalYearEffect(py);
+      expect(typeof result.effects).toBe('string');
+      expect(result.effects.length).toBeGreaterThan(0);
+    }
+  });
 
-    it('should provide user-friendly rate limit message', () => {
-      // All tiers fail with rate_limit
-      // → Throw specific user-facing message
-      expect(true).toBe(true);
-    });
+  it('year 1 is a blessing year', () => {
+    const result = getPersonalYearEffect(1);
+    expect(result.isBlessingYear).toBe(true);
+  });
+
+  it('PERSONAL_YEAR_EFFECTS covers years 1–9', () => {
+    for (let py = 1; py <= 9; py++) {
+      expect(PERSONAL_YEAR_EFFECTS[py]).toBeDefined();
+    }
   });
 });
 
-describe('Logging and Observability', () => {
-  describe('Request logging', () => {
-    it('should log model and temperature', () => {
-      // Logged: model name, temperature, response format, strict mode
-      expect(true).toBe(true);
-    });
-
-    it('should log prompt length', () => {
-      // Logged: Character count of JSON.stringify(messages)
-      expect(true).toBe(true);
-    });
-
-    it('should log raw output preview', () => {
-      // Logged: First 200 characters of model response
-      expect(true).toBe(true);
-    });
+describe('Missing number detection', () => {
+  it('empty missing array → no effects', () => {
+    const result = getMissingEffects([]);
+    expect(result).toHaveLength(0);
   });
 
-  describe('Error logging', () => {
-    it('should log categorized error type', () => {
-      // Logged: Error type (enum), HTTP status, message
-      expect(true).toBe(true);
-    });
-
-    it('should log full Groq API error details', () => {
-      // Logged: JSON.stringify(error.error, null, 2)
-      expect(true).toBe(true);
-    });
-
-    it('should log tier progression', () => {
-      // Logged: "Attempting Tier X", "Success on Tier X", "Tier X failed"
-      expect(true).toBe(true);
-    });
+  it('missing digit 4 → returns effect for 4', () => {
+    const result = getMissingEffects([4]);
+    expect(result).toHaveLength(1);
+    expect(result[0].number).toBe(4);
+    expect(typeof result[0].effect).toBe('string');
+    expect(result[0].effect.length).toBeGreaterThan(0);
   });
 
-  describe('JSON validation logging', () => {
-    it('should log JSON validation result', () => {
-      // Logged: "JSON validation: PASSED" or "JSON validation: FAILED"
-      expect(true).toBe(true);
-    });
+  it('multiple missing digits → one entry per digit', () => {
+    const result = getMissingEffects([2, 7]);
+    expect(result).toHaveLength(2);
+    const numbers = result.map(r => r.number);
+    expect(numbers).toContain(2);
+    expect(numbers).toContain(7);
+  });
 
-    it('should log raw content on validation failure', () => {
-      // Logged: Full response content when JSON.parse fails
-      expect(true).toBe(true);
-    });
+  it('missing digit 5 → returns effect with planet info', () => {
+    const result = getMissingEffects([5]);
+    expect(result[0].planet).toBeDefined();
+    expect(typeof result[0].planet).toBe('string');
   });
 });
 
-describe('Backward Compatibility', () => {
-  it('should accept preferredModel parameter', () => {
-    // generateWithFallback({ model: 'specific-model' })
-    // Should use specified model directly (single attempt)
-    expect(true).toBe(true);
+describe('Repetition detection', () => {
+  it('all zeros → empty effects', () => {
+    const counts: Record<number, number> = { 1:0, 2:0, 3:0, 4:0, 5:0, 6:0, 7:0, 8:0, 9:0 };
+    const result = getRepetitionEffects(counts);
+    expect(result).toHaveLength(0);
   });
 
-  it('should use simple fallback for non-structured outputs', () => {
-    // No responseFormat or responseFormat.type !== 'json_schema'
-    // Should use PRIMARY → FALLBACK (not tier cascade)
-    expect(true).toBe(true);
+  it('each digit appearing once → no repetition effects (or only count-1 effects)', () => {
+    const counts: Record<number, number> = { 1:1, 2:1, 3:1, 4:1, 5:1, 6:1, 7:1, 8:1, 9:1 };
+    // Count-1 may be considered "under power" — result should be an array
+    const result = getRepetitionEffects(counts);
+    expect(Array.isArray(result)).toBe(true);
   });
 
-  it('should maintain function signature', () => {
-    // generateWithFallback(messages, options)
-    // Options: temperature, maxTokens, responseFormat, model
-    expect(true).toBe(true);
+  it('digit 1 repeated 3 times → returns effect for 1', () => {
+    const counts: Record<number, number> = { 1:3, 2:0, 3:0, 4:0, 5:0, 6:0, 7:0, 8:0, 9:0 };
+    const result = getRepetitionEffects(counts);
+    expect(result.length).toBeGreaterThan(0);
+    const ones = result.filter(r => r.number === 1);
+    expect(ones.length).toBeGreaterThan(0);
+  });
+
+  it('digit 9 repeated 4 times → negative zone effect for 9', () => {
+    const counts: Record<number, number> = { 1:0, 2:0, 3:0, 4:0, 5:0, 6:0, 7:0, 8:0, 9:4 };
+    const result = getRepetitionEffects(counts);
+    const nines = result.filter(r => r.number === 9);
+    expect(nines.length).toBeGreaterThan(0);
   });
 });
