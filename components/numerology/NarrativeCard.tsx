@@ -7,9 +7,10 @@ interface NarrativeCardProps {
   }>;
   onGenerate?: () => void;
   isGenerating?: boolean;
+  errorMessage?: string;
 }
 
-export const NarrativeCard = memo(function NarrativeCard({ sections, onGenerate, isGenerating }: NarrativeCardProps) {
+export const NarrativeCard = memo(function NarrativeCard({ sections, onGenerate, isGenerating, errorMessage }: NarrativeCardProps) {
   const hasInsights = sections && sections.length > 0;
 
   return (
@@ -18,8 +19,12 @@ export const NarrativeCard = memo(function NarrativeCard({ sections, onGenerate,
         ✨ AI Insights
       </div>
 
-      {!hasInsights ? (
-        <button 
+      {errorMessage ? (
+        <p className="text-sm text-white/40 text-center">
+          AI insights temporarily unavailable. Your chart above is unaffected.
+        </p>
+      ) : !hasInsights ? (
+        <button
           onClick={onGenerate}
           disabled={isGenerating}
           className="mx-auto mt-2 px-6 py-2.5 rounded-xl text-white text-[13px] font-bold transition-all disabled:opacity-50"

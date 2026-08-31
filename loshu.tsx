@@ -27,13 +27,13 @@ type NarrativePayload = {
 type AnalysisResult = {
   m1: any;
   m2: any;
-  narrative: NarrativePayload["narrative"];
   mode: string;
   lang: string;
   prof1: any;
   prof2: any;
-  signals: NarrativePayload["signals"];
-  archetypes: NarrativePayload["archetypes"];
+  narrative: NarrativePayload["narrative"] | null;
+  signals: NarrativePayload["signals"] | null;
+  archetypes: NarrativePayload["archetypes"] | null;
 };
 
 // ─── LAYER 1: PURE MATH ──────────────────────────────────────────────────────
@@ -288,6 +288,8 @@ export default function App() {
   const [result,setResult]=useState<AnalysisResult | null>(null);
   const [loading,setLoading]=useState(false);
   const [error,setError]=useState("");
+  const [narrativeLoading,setNarrativeLoading]=useState(false);
+  const [narrativeError,setNarrativeError]=useState<string|null>(null);
 
   const calculate=async()=>{
     if (!p1.dob){setError("Please enter a date of birth.");return;}
@@ -298,38 +300,27 @@ export default function App() {
       const y2=new Date(p2.dob).getFullYear();
       if (y2<1900||y2>2025){setError("Year of birth must be between 1900 and 2025.");return;}
     }
-    setError("");setLoading(true);setResult(null);
-    try {
-      const m1={...mathLayer(p1.dob,p1.gender),name:p1.name};
-      const m2=mode==="couple"?{...mathLayer(p2.dob,p2.gender),name:p2.name}:null;
-      // Build profiles once — reused for analysis request payloads only
-      const prof1=buildProfile(m1,m1.name);
-      const prof2=m2?buildProfile(m2,m2.name):null;
-      const analysis=await fetchNarrative(prof1,prof2,null,mode,lang);
-      setResult({
-        m1,
-        m2,
-        narrative:analysis.narrative,
-        mode,
-        lang,
-        prof1,
-        prof2,
-        signals:analysis.signals,
-        archetypes:analysis.archetypes,
-      });
-    } catch(e){
-      // Enhanced error message handling
-      const errorMsg = (e as Error).message;
-      if (errorMsg.includes('Rate limit') || errorMsg.includes('high demand')) {
-        setError("⏳ AI service is busy. Please wait 30 seconds and try again.");
-      } else if (errorMsg.includes('formatting error')) {
-        setError("⚠️ AI response error. Please try again.");
-      } else {
-        setError(errorMsg || "Something went wrong. Please try again.");
-      }
-      console.error(e);
-    }
+    setError("");setLoading(true);setResult(null);setNarrativeError(null);
+
+    // Phase 1 — synchronous math, cannot fail
+    const m1={...mathLayer(p1.dob,p1.gender),name:p1.name};
+    const m2=mode==="couple"?{...mathLayer(p2.dob,p2.gender),name:p2.name}:null;
+    const prof1=buildProfile(m1,m1.name);
+    const prof2=m2?buildProfile(m2,m2.name):null;
+    setResult({m1,m2,mode,lang,prof1,prof2,narrative:null,signals:null,archetypes:null});
     setLoading(false);
+
+    // Phase 2 — async Groq narrative, scoped failure; never un-renders the grid
+    setNarrativeLoading(true);
+    try {
+      const analysis=await fetchNarrative(prof1,prof2,null,mode,lang);
+      setResult(prev=>prev?({...prev,narrative:analysis.narrative,signals:analysis.signals,archetypes:analysis.archetypes}):prev);
+    } catch(e){
+      setNarrativeError((e as Error).message);
+      console.error(e);
+    } finally {
+      setNarrativeLoading(false);
+    }
   };
 
   const R=result;
@@ -403,23 +394,27 @@ export default function App() {
             <PartnershipScoreCard m1={R.m1} m2={R.m2} />
           )}
 
-          <NumerologyDashboard 
-            profile={R.m1} 
-            label={R.m1.name || "Person 1"} 
-            color={k1c} 
-            narrative={mode === "single" ? R.narrative : null} 
-            chatProps={mode === "single" ? { chartContext: chartCtx, lang, fetchFollowUp } : undefined}
+          <NumerologyDashboard
+            profile={R.m1}
+            label={R.m1.name || "Person 1"}
+            color={k1c}
+            narrative={mode === "single" ? R.narrative : null}
+            chatProps={mode === "single" && R.archetypes ? { chartContext: chartCtx, lang, fetchFollowUp } : undefined}
             isSingle={mode === "single"}
+            narrativeLoading={narrativeLoading}
+            narrativeError={narrativeError ?? undefined}
           />
 
           {R.m2 && (
-            <NumerologyDashboard 
-              profile={R.m2} 
-              label={R.m2.name || "Person 2"} 
-              color={k2c} 
-              narrative={mode === "couple" ? R.narrative : null} 
-              chatProps={mode === "couple" ? { chartContext: chartCtx, lang, fetchFollowUp } : undefined}
+            <NumerologyDashboard
+              profile={R.m2}
+              label={R.m2.name || "Person 2"}
+              color={k2c}
+              narrative={mode === "couple" ? R.narrative : null}
+              chatProps={mode === "couple" && R.archetypes ? { chartContext: chartCtx, lang, fetchFollowUp } : undefined}
               isSingle={false}
+              narrativeLoading={narrativeLoading}
+              narrativeError={narrativeError ?? undefined}
             />
           )}
 

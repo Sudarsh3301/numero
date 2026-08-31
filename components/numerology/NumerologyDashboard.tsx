@@ -19,12 +19,13 @@ interface NumerologyDashboardProps {
   label?: string;
   color?: string;
   isSingle?: boolean;
-  // To allow chat optionally if we only render one chat
   chatProps?: {
     chartContext: any;
     lang: string;
     fetchFollowUp: any;
   };
+  narrativeLoading?: boolean;
+  narrativeError?: string;
 }
 
 export const NumerologyDashboard = memo(function NumerologyDashboard({
@@ -34,6 +35,8 @@ export const NumerologyDashboard = memo(function NumerologyDashboard({
   color = "#a855f7",
   isSingle = false,
   chatProps,
+  narrativeLoading,
+  narrativeError,
 }: NumerologyDashboardProps) {
   const { selectedNumber, setSelectedNumber } = useNumerologyStore();
   const [lockedNumber, setLockedNumber] = useState<number | null>(null);
@@ -118,11 +121,12 @@ export const NumerologyDashboard = memo(function NumerologyDashboard({
       {/* SECTION 2: INSIGHTS */}
       <section className="flex flex-col gap-8">
         <ComplementaryCard missing={profile.missing} present={profile.present} label={label} />
-        {narrative && narrative.sections && (
-          <NarrativeCard 
-            sections={narrative.sections} 
-            isGenerating={false} 
-            onGenerate={() => console.log('Generate AI Insights clicked')} 
+        {(narrative?.sections || narrativeLoading || narrativeError) && (
+          <NarrativeCard
+            sections={narrative?.sections ?? []}
+            isGenerating={narrativeLoading ?? false}
+            onGenerate={() => console.log('Generate AI Insights clicked')}
+            errorMessage={narrativeError ?? undefined}
           />
         )}
       </section>
