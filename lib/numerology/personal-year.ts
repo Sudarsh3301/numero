@@ -25,7 +25,7 @@ export interface PersonalYearEffect {
 export const PERSONAL_YEAR_EFFECTS: Record<number, PersonalYearEffect> = {
   1: {
     year: 1,
-    name: "Blessing Year — Sun Year",
+    name: "Blessing Year — Surya Year",
     type: "blessing",
     effects: "Seed is sown. Start of cycle. Year of execution, not planning.",
     guidance: "Enthusiasm and energy drive greater results in all works started. This is the time to take initiative and start new projects.",
@@ -33,7 +33,7 @@ export const PERSONAL_YEAR_EFFECTS: Record<number, PersonalYearEffect> = {
   },
   2: {
     year: 2,
-    name: "Moon Year",
+    name: "Chandra Year",
     type: "testing",
     effects: "Roots start growing. Slow down and go gentle. Year of consolidation, demands patience.",
     guidance: "Analyze & consolidate past/present. Plan & organize. Year of partnership — except with 4, 8 & 9.",
@@ -41,7 +41,7 @@ export const PERSONAL_YEAR_EFFECTS: Record<number, PersonalYearEffect> = {
   },
   3: {
     year: 3,
-    name: "Jupiter Year",
+    name: "Guru Year",
     type: "blessing",
     effects: "Sprouting starts. Year of knowledge, education, spiritual pursuits.",
     guidance: "Focus on upgrading self. Year of expansion. Business linked with education may flourish. Be creative — socialize, travel, plan for kids.",

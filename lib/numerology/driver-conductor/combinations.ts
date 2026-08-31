@@ -45,7 +45,7 @@ export const DC_TABLE: Record<string, DCCombination> = {
     strength: 3,
     affect: "Politics",
     professions: ["Politics", "Government", "Public service"],
-    warnings: "1 Sun/King & 4 Rahu - power struggle possible"
+    warnings: "1 Surya/King & 4 Rahu - power struggle possible"
   },
   "1-5": {
     driver: 1,
@@ -129,7 +129,7 @@ export const DC_TABLE: Record<string, DCCombination> = {
     strength: 2.5,
     affect: "Best for sweets",
     professions: ["Sweets business", "Celebration industry"],
-    warnings: "2 = water, 6 = Venus/celebration"
+    warnings: "2 = water, 6 = Shukra/celebration"
   },
   "2-7": {
     driver: 2,

@@ -15,7 +15,7 @@ import { getPlanetAssociation } from './planets';
 export const HEALTH_ISSUES: Record<number, HealthProfile> = {
   1: {
     number: 1,
-    planet: "Sun",
+    planet: "Surya",
     title: "High Energy",
     issues: [
       "Heart-related issues",
@@ -34,7 +34,7 @@ export const HEALTH_ISSUES: Record<number, HealthProfile> = {
   },
   2: {
     number: 2,
-    planet: "Moon",
+    planet: "Chandra",
     title: "Sensitive",
     issues: [
       "Anemia",
@@ -54,7 +54,7 @@ export const HEALTH_ISSUES: Record<number, HealthProfile> = {
   },
   3: {
     number: 3,
-    planet: "Jupiter",
+    planet: "Guru",
     title: "Over-thinking",
     issues: [
       "Skin diseases (rashes)",
@@ -99,7 +99,7 @@ export const HEALTH_ISSUES: Record<number, HealthProfile> = {
   },
   5: {
     number: 5,
-    planet: "Mercury",
+    planet: "Budh",
     title: "Nervous",
     issues: [
       "Mental strain",
@@ -118,7 +118,7 @@ export const HEALTH_ISSUES: Record<number, HealthProfile> = {
   },
   6: {
     number: 6,
-    planet: "Venus",
+    planet: "Shukra",
     title: "ENT",
     issues: [
       "ENT issues",
@@ -158,7 +158,7 @@ export const HEALTH_ISSUES: Record<number, HealthProfile> = {
   },
   8: {
     number: 8,
-    planet: "Saturn",
+    planet: "Shani",
     title: "Chronic",
     issues: [
       "Liver, bile & intestine-related issues",
@@ -179,7 +179,7 @@ export const HEALTH_ISSUES: Record<number, HealthProfile> = {
   },
   9: {
     number: 9,
-    planet: "Mars",
+    planet: "Mangal",
     title: "High Energy / Impulsive",
     issues: [
       "Smallpox, measles",

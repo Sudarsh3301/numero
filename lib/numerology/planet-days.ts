@@ -21,21 +21,21 @@ export interface PlanetDay {
  */
 export const PLANET_DAYS: Record<number, PlanetDay> = {
   1: {
-    planet: "Sun (Surya)",
+    planet: "Surya (Surya)",
     number: 1,
     day: "Sunday",
     colorsToAvoid: ["Black"],
     colorsToUse: ["Red"]
   },
   2: {
-    planet: "Moon (Chandra)",
+    planet: "Chandra (Chandra)",
     number: 2,
     day: "Monday",
     colorsToAvoid: ["Black", "Red"],
     colorsToUse: ["White"]
   },
   3: {
-    planet: "Jupiter (Guru)",
+    planet: "Guru (Guru)",
     number: 3,
     day: "Thursday",
     colorsToAvoid: ["White"],
@@ -49,14 +49,14 @@ export const PLANET_DAYS: Record<number, PlanetDay> = {
     colorsToUse: ["Black", "Grey", "Blue"]
   },
   5: {
-    planet: "Mercury (Budh)",
+    planet: "Budh (Budh)",
     number: 5,
     day: "Wednesday",
     colorsToAvoid: [],
     colorsToUse: ["Green"]
   },
   6: {
-    planet: "Venus (Shukra)",
+    planet: "Shukra (Shukra)",
     number: 6,
     day: "Friday",
     colorsToAvoid: ["Yellow"],
@@ -70,14 +70,14 @@ export const PLANET_DAYS: Record<number, PlanetDay> = {
     colorsToUse: ["Black", "Grey", "Blue"]
   },
   8: {
-    planet: "Saturn (Shani)",
+    planet: "Shani (Shani)",
     number: 8,
     day: "Saturday",
     colorsToAvoid: ["White"],
     colorsToUse: ["Black", "Grey", "Blue"]
   },
   9: {
-    planet: "Mars (Mangal)",
+    planet: "Mangal (Mangal)",
     number: 9,
     day: "Tuesday",
     colorsToAvoid: ["Black"],

@@ -17,25 +17,25 @@ import {
 } from './planets';
 
 describe('getPlanetAssociation', () => {
-  it('should return correct planet for number 1 - Sun', () => {
+  it('should return correct planet for number 1 - Surya', () => {
     const planet = getPlanetAssociation(1);
-    expect(planet.name).toBe('Sun');
+    expect(planet.name).toBe('Surya');
     expect(planet.sanskrit).toBe('Surya');
     expect(planet.title).toBe('King');
     expect(planet.birthDates).toEqual([1, 10, 19, 28]);
   });
 
-  it('should return correct planet for number 2 - Moon', () => {
+  it('should return correct planet for number 2 - Chandra', () => {
     const planet = getPlanetAssociation(2);
-    expect(planet.name).toBe('Moon');
+    expect(planet.name).toBe('Chandra');
     expect(planet.sanskrit).toBe('Chandra');
     expect(planet.title).toBe('Queen');
     expect(planet.birthDates).toEqual([2, 11, 20, 29]);
   });
 
-  it('should return correct planet for number 9 - Mars', () => {
+  it('should return correct planet for number 9 - Mangal', () => {
     const planet = getPlanetAssociation(9);
-    expect(planet.name).toBe('Mars');
+    expect(planet.name).toBe('Mangal');
     expect(planet.sanskrit).toBe('Mangal');
     expect(planet.title).toBe('Advisor');
   });
@@ -47,19 +47,19 @@ describe('getPlanetAssociation', () => {
 });
 
 describe('Planet Traits from goal.md Section 2', () => {
-  it('should have correct traits for Sun (1)', () => {
+  it('should have correct traits for Surya (1)', () => {
     const planet = getPlanetAssociation(1);
     expect(planet.traits).toContain('Leadership');
     expect(planet.traits).toContain('Authoritative');
   });
 
-  it('should have correct traits for Moon (2)', () => {
+  it('should have correct traits for Chandra (2)', () => {
     const planet = getPlanetAssociation(2);
     expect(planet.traits).toContain('Emotional');
     expect(planet.traits).toContain('Intuitive');
   });
 
-  it('should have correct traits for Saturn (8)', () => {
+  it('should have correct traits for Shani (8)', () => {
     const planet = getPlanetAssociation(8);
     expect(planet.traits).toContain('Struggle');
     expect(planet.traits).toContain('Hard-working');
@@ -67,17 +67,17 @@ describe('Planet Traits from goal.md Section 2', () => {
 });
 
 describe('getPlanetRelationship - Friends from goal.md', () => {
-  it('should identify Sun (1) friends: 9,2,3,5,6,1', () => {
+  it('should identify Surya (1) friends: 9,2,3,5,6,1', () => {
     const planet1 = getPlanetAssociation(1);
     expect(planet1.friends).toEqual([9, 2, 3, 5, 6, 1]);
   });
 
-  it('should confirm 1-9 friendship (Sun-Mars)', () => {
+  it('should confirm 1-9 friendship (Surya-Mangal)', () => {
     expect(getPlanetRelationship(1, 9)).toBe('friend');
     expect(arePlanetsFriends(1, 9)).toBe(true);
   });
 
-  it('should confirm 1-2 friendship (Sun-Moon)', () => {
+  it('should confirm 1-2 friendship (Surya-Chandra)', () => {
     expect(getPlanetRelationship(1, 2)).toBe('friend');
   });
 
@@ -93,31 +93,31 @@ describe('getPlanetRelationship - Friends from goal.md', () => {
 });
 
 describe('getPlanetRelationship - Enemies from goal.md', () => {
-  it('should identify Sun (1) enemy: 8', () => {
+  it('should identify Surya (1) enemy: 8', () => {
     const planet1 = getPlanetAssociation(1);
     expect(planet1.enemies).toEqual([8]);
   });
 
-  it('should confirm 1-8 enmity (Sun-Saturn)', () => {
+  it('should confirm 1-8 enmity (Surya-Shani)', () => {
     expect(getPlanetRelationship(1, 8)).toBe('enemy');
     expect(arePlanetsEnemies(1, 8)).toBe(true);
   });
 
-  it('should confirm 2-9 enmity (Moon-Mars)', () => {
+  it('should confirm 2-9 enmity (Chandra-Mangal)', () => {
     expect(arePlanetsEnemies(2, 9)).toBe(true);
   });
 
-  it('should confirm 3-6 enmity (Jupiter-Venus)', () => {
+  it('should confirm 3-6 enmity (Guru-Shukra)', () => {
     expect(arePlanetsEnemies(3, 6)).toBe(true);
   });
 
-  it('should confirm 8-1 enmity (Saturn-Sun) - bidirectional', () => {
+  it('should confirm 8-1 enmity (Shani-Surya) - bidirectional', () => {
     expect(arePlanetsEnemies(8, 1)).toBe(true);
   });
 });
 
 describe('getPlanetRelationship - Neutral', () => {
-  it('should identify Sun (1) neutral: 4,7', () => {
+  it('should identify Surya (1) neutral: 4,7', () => {
     const planet1 = getPlanetAssociation(1);
     expect(planet1.neutral).toEqual([4, 7]);
   });
@@ -189,24 +189,24 @@ describe('Best Driver combinations from goal.md Section 12', () => {
 });
 
 describe('getPlanetByBirthDate', () => {
-  it('should return Sun for birth dates 1, 10, 19, 28', () => {
-    expect(getPlanetByBirthDate(1)?.name).toBe('Sun');
-    expect(getPlanetByBirthDate(10)?.name).toBe('Sun');
-    expect(getPlanetByBirthDate(19)?.name).toBe('Sun');
-    expect(getPlanetByBirthDate(28)?.name).toBe('Sun');
+  it('should return Surya for birth dates 1, 10, 19, 28', () => {
+    expect(getPlanetByBirthDate(1)?.name).toBe('Surya');
+    expect(getPlanetByBirthDate(10)?.name).toBe('Surya');
+    expect(getPlanetByBirthDate(19)?.name).toBe('Surya');
+    expect(getPlanetByBirthDate(28)?.name).toBe('Surya');
   });
 
-  it('should return Moon for birth dates 2, 11, 20, 29', () => {
-    expect(getPlanetByBirthDate(2)?.name).toBe('Moon');
-    expect(getPlanetByBirthDate(11)?.name).toBe('Moon');
-    expect(getPlanetByBirthDate(20)?.name).toBe('Moon');
-    expect(getPlanetByBirthDate(29)?.name).toBe('Moon');
+  it('should return Chandra for birth dates 2, 11, 20, 29', () => {
+    expect(getPlanetByBirthDate(2)?.name).toBe('Chandra');
+    expect(getPlanetByBirthDate(11)?.name).toBe('Chandra');
+    expect(getPlanetByBirthDate(20)?.name).toBe('Chandra');
+    expect(getPlanetByBirthDate(29)?.name).toBe('Chandra');
   });
 
-  it('should return Mars for birth dates 9, 18, 27', () => {
-    expect(getPlanetByBirthDate(9)?.name).toBe('Mars');
-    expect(getPlanetByBirthDate(18)?.name).toBe('Mars');
-    expect(getPlanetByBirthDate(27)?.name).toBe('Mars');
+  it('should return Mangal for birth dates 9, 18, 27', () => {
+    expect(getPlanetByBirthDate(9)?.name).toBe('Mangal');
+    expect(getPlanetByBirthDate(18)?.name).toBe('Mangal');
+    expect(getPlanetByBirthDate(27)?.name).toBe('Mangal');
   });
 
   it('should return null for invalid birth date', () => {
@@ -246,7 +246,7 @@ describe('getCommonEnemies', () => {
 });
 
 describe('Master Numbers in birthDates', () => {
-  it('should list 11 as a birth date for Moon (2)', () => {
+  it('should list 11 as a birth date for Chandra (2)', () => {
     const planet2 = getPlanetAssociation(2);
     expect(planet2.birthDates).toContain(11);
   });
@@ -263,7 +263,7 @@ describe('Karmic Numbers in birthDates', () => {
     expect(planet4.birthDates).toContain(13);
   });
 
-  it('should list 14 as a birth date for Mercury (5)', () => {
+  it('should list 14 as a birth date for Budh (5)', () => {
     const planet5 = getPlanetAssociation(5);
     expect(planet5.birthDates).toContain(14);
   });

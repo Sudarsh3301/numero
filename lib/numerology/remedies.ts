@@ -18,7 +18,7 @@ import type { Remedy, ElementRemedy, GeneralRemedy } from './types';
  * Organized by frequency: daily, weekly, monthly, quarterly, as_needed
  */
 export const PLANET_REMEDIES: Record<number, Remedy[]> = {
-  1: [ // Sun (Surya) - Number 1
+  1: [ // Surya (Surya) - Number 1
     { action: "Offer water to the sun daily", frequency: "daily", condition: "Only if Driver is not 8" },
     { action: "Do Surya Namaskar", frequency: "daily", condition: "Only if Driver is not 8" },
     { action: "Take blessings from father daily", frequency: "daily", condition: "Only if Driver is not 8" },
@@ -28,7 +28,7 @@ export const PLANET_REMEDIES: Record<number, Remedy[]> = {
     { action: "Donate water to the thirsty", frequency: "as_needed" },
     { action: "Donate wheat to the needy", frequency: "as_needed" }
   ],
-  2: [ // Moon (Chandra) - Number 2
+  2: [ // Chandra (Chandra) - Number 2
     { action: "Shiva upasana", frequency: "daily" },
     { action: "Offer water or panchamruth to Shivalinga in Shiva mandir", frequency: "weekly" },
     { action: "Walk in moonlight on Poornima", frequency: "monthly" },
@@ -39,7 +39,7 @@ export const PLANET_REMEDIES: Record<number, Remedy[]> = {
     { action: "Donate white things (sugar, rice, clothes) to the needy", frequency: "as_needed" },
     { action: "Wear and donate silver", frequency: "as_needed" }
   ],
-  3: [ // Jupiter (Guru) - Number 3
+  3: [ // Guru (Guru) - Number 3
     { action: "Apply kesar (saffron) tilak on forehead daily", frequency: "daily" },
     { action: "Drink kesar milk or kesar water daily, or at least on Thursdays", frequency: "daily" },
     { action: "Offer haldi (turmeric) water on banana plant on Thursdays", frequency: "weekly" },
@@ -63,7 +63,7 @@ export const PLANET_REMEDIES: Record<number, Remedy[]> = {
     { action: "Donate sesame (til) oil", frequency: "as_needed" },
     { action: "Put coal in flowing water on Saturday / Tuesday", frequency: "weekly" }
   ],
-  5: [ // Mercury (Budh) - Number 5
+  5: [ // Budh (Budh) - Number 5
     { action: "Eat tulsi leaves daily", frequency: "daily" },
     { action: "Eat more green vegetables", frequency: "daily" },
     { action: "Walk barefoot on green grass", frequency: "daily" },
@@ -77,7 +77,7 @@ export const PLANET_REMEDIES: Record<number, Remedy[]> = {
     { action: "Donate notebooks / stationery to kids", frequency: "as_needed" },
     { action: "Donate or contribute to child education / charity", frequency: "as_needed" }
   ],
-  6: [ // Venus (Shukra) - Number 6
+  6: [ // Shukra (Shukra) - Number 6
     { action: "Visit Durga / Laxmi temple on Friday", frequency: "weekly" },
     { action: "Feed sweets to the needy on Friday", frequency: "weekly" },
     { action: "Donate white clothes / sweets / grain / rice / sugar to the needy on Friday", frequency: "as_needed" },
@@ -98,7 +98,7 @@ export const PLANET_REMEDIES: Record<number, Remedy[]> = {
     { action: "Donate sesame (til) oil", frequency: "as_needed" },
     { action: "Put coal in flowing water on Saturday / Tuesday", frequency: "weekly" }
   ],
-  8: [ // Saturn (Shani) - Number 8
+  8: [ // Shani (Shani) - Number 8
     { action: "Make your legs work — do physical exercise", frequency: "daily" },
     { action: "Do jhoota ghar seva (humble household service)", frequency: "daily" },
     { action: "Do Shani upasana / visit Shani temple on Saturday / read Shani Chalisa", frequency: "weekly" },
@@ -110,7 +110,7 @@ export const PLANET_REMEDIES: Record<number, Remedy[]> = {
     { action: "Donate: mustard oil, til oil, black metal, iron, coins, black cloth, black lentils (dal)", frequency: "as_needed" },
     { action: "Tie all the above in a black cloth, touch to forehead, and offer at Shani mandir", frequency: "as_needed" }
   ],
-  9: [ // Mars (Mangal) - Number 9
+  9: [ // Mangal (Mangal) - Number 9
     { action: "Read Hanuman Chalisa / Sunderkanda on Tuesdays", frequency: "weekly" },
     { action: "Visit Hanuman temple on Tuesday", frequency: "weekly" },
     { action: "Offer Sindoor + Jasmine oil + Orange Sindoor to Hanuman mandir", frequency: "weekly" },

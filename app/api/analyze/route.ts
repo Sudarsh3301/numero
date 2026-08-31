@@ -133,7 +133,7 @@ function buildArchetypePrompt(mode: AnalysisMode, signals: any) {
       'Guidelines:',
       '- Use psychological language, not mystical vagueness.',
       '- Archetypes must be internally consistent.',
-      '- Reference Driver-Conductor combination, ruling planets (Sun, Moon, Jupiter, etc.), Master/Karmic numbers.',
+      '- Reference Driver-Conductor combination, ruling planets (Surya, Chandra, Guru, etc.), Master/Karmic numbers.',
       '- For missing numbers: 5 is critical (breaks balance), 4 breaks three planes, 6 affects family bonding.',
       '- Keep each description to 1-2 tight sentences.',
       '- Return JSON only using the required schema.',

@@ -141,25 +141,25 @@ describe('getPersonalYearEffect', () => {
   it('should return correct effect for PY 1 - Blessing Year', () => {
     const effect = getPersonalYearEffect(1);
     expect(effect.year).toBe(1);
-    expect(effect.name).toBe('Blessing Year — Sun Year');
+    expect(effect.name).toBe('Blessing Year — Surya Year');
     expect(effect.type).toBe('blessing');
     expect(effect.isBlessingYear).toBe(true);
     expect(effect.effects).toContain('Seed is sown');
   });
 
-  it('should return correct effect for PY 2 - Moon Year', () => {
+  it('should return correct effect for PY 2 - Chandra Year', () => {
     const effect = getPersonalYearEffect(2);
     expect(effect.year).toBe(2);
-    expect(effect.name).toBe('Moon Year');
+    expect(effect.name).toBe('Chandra Year');
     expect(effect.type).toBe('testing');
     expect(effect.isBlessingYear).toBe(false);
     expect(effect.effects).toContain('Roots start growing');
   });
 
-  it('should return correct effect for PY 3 - Jupiter Year', () => {
+  it('should return correct effect for PY 3 - Guru Year', () => {
     const effect = getPersonalYearEffect(3);
     expect(effect.year).toBe(3);
-    expect(effect.name).toBe('Jupiter Year');
+    expect(effect.name).toBe('Guru Year');
     expect(effect.type).toBe('blessing');
     expect(effect.isBlessingYear).toBe(true);
   });

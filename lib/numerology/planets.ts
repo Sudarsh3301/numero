@@ -12,7 +12,7 @@ import type { Planet } from './types';
 export const PLANET_MAPPING: Record<number, Planet> = {
   1: {
     number: 1,
-    name: "Sun",
+    name: "Surya",
     sanskrit: "Surya",
     title: "King",
     birthDates: [1, 10, 19, 28],
@@ -32,7 +32,7 @@ export const PLANET_MAPPING: Record<number, Planet> = {
   },
   2: {
     number: 2,
-    name: "Moon",
+    name: "Chandra",
     sanskrit: "Chandra",
     title: "Queen",
     birthDates: [2, 11, 20, 29], // 11 is Master Number
@@ -51,7 +51,7 @@ export const PLANET_MAPPING: Record<number, Planet> = {
   },
   3: {
     number: 3,
-    name: "Jupiter",
+    name: "Guru",
     sanskrit: "Guru",
     title: "+Ve Teacher",
     birthDates: [3, 12, 21, 30],
@@ -95,7 +95,7 @@ export const PLANET_MAPPING: Record<number, Planet> = {
   },
   5: {
     number: 5,
-    name: "Mercury",
+    name: "Budh",
     sanskrit: "Budh",
     title: "Prince / RajKumar",
     birthDates: [5, 14, 23], // 14 is Karmic
@@ -113,7 +113,7 @@ export const PLANET_MAPPING: Record<number, Planet> = {
   },
   6: {
     number: 6,
-    name: "Venus",
+    name: "Shukra",
     sanskrit: "Shukra",
     title: "–Ve Teacher / Seeks Luxury",
     birthDates: [6, 15, 24],
@@ -152,7 +152,7 @@ export const PLANET_MAPPING: Record<number, Planet> = {
   },
   8: {
     number: 8,
-    name: "Saturn",
+    name: "Shani",
     sanskrit: "Shani",
     title: "Judge",
     birthDates: [8, 17, 26],
@@ -172,7 +172,7 @@ export const PLANET_MAPPING: Record<number, Planet> = {
   },
   9: {
     number: 9,
-    name: "Mars",
+    name: "Mangal",
     sanskrit: "Mangal",
     title: "Advisor",
     birthDates: [9, 18, 27],

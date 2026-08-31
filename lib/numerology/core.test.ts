@@ -74,19 +74,19 @@ describe('calculateDriver', () => {
   });
 
   it('should calculate driver for all birth date groups from goal.md', () => {
-    // Number 1 - Sun: 1, 10, 19, 28
+    // Number 1 - Surya: 1, 10, 19, 28
     expect(calculateDriver('01/01/2000')).toBe(1);
     expect(calculateDriver('10/01/2000')).toBe(1);
     expect(calculateDriver('19/01/2000')).toBe(1);
     expect(calculateDriver('28/01/2000')).toBe(1);
 
-    // Number 2 - Moon: 2, 11, 20, 29
+    // Number 2 - Chandra: 2, 11, 20, 29
     expect(calculateDriver('02/01/2000')).toBe(2);
     expect(calculateDriver('11/01/2000')).toBe(2);
     expect(calculateDriver('20/01/2000')).toBe(2);
     expect(calculateDriver('29/01/2000')).toBe(2);
 
-    // Number 3 - Jupiter: 3, 12, 21, 30
+    // Number 3 - Guru: 3, 12, 21, 30
     expect(calculateDriver('03/01/2000')).toBe(3);
     expect(calculateDriver('12/01/2000')).toBe(3);
     expect(calculateDriver('21/01/2000')).toBe(3);
@@ -98,12 +98,12 @@ describe('calculateDriver', () => {
     expect(calculateDriver('22/01/2000')).toBe(4);
     expect(calculateDriver('31/01/2000')).toBe(4);
 
-    // Number 5 - Mercury: 5, 14, 23
+    // Number 5 - Budh: 5, 14, 23
     expect(calculateDriver('05/01/2000')).toBe(5);
     expect(calculateDriver('14/01/2000')).toBe(5);
     expect(calculateDriver('23/01/2000')).toBe(5);
 
-    // Number 6 - Venus: 6, 15, 24
+    // Number 6 - Shukra: 6, 15, 24
     expect(calculateDriver('06/01/2000')).toBe(6);
     expect(calculateDriver('15/01/2000')).toBe(6);
     expect(calculateDriver('24/01/2000')).toBe(6);
@@ -113,12 +113,12 @@ describe('calculateDriver', () => {
     expect(calculateDriver('16/01/2000')).toBe(7);
     expect(calculateDriver('25/01/2000')).toBe(7);
 
-    // Number 8 - Saturn: 8, 17, 26
+    // Number 8 - Shani: 8, 17, 26
     expect(calculateDriver('08/01/2000')).toBe(8);
     expect(calculateDriver('17/01/2000')).toBe(8);
     expect(calculateDriver('26/01/2000')).toBe(8);
 
-    // Number 9 - Mars: 9, 18, 27
+    // Number 9 - Mangal: 9, 18, 27
     expect(calculateDriver('09/01/2000')).toBe(9);
     expect(calculateDriver('18/01/2000')).toBe(9);
     expect(calculateDriver('27/01/2000')).toBe(9);
