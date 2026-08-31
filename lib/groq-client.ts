@@ -18,8 +18,7 @@ export const MODELS = {
   // Structured output models - 4-tier cascade for reliability
   STRUCTURED_PRIMARY: 'openai/gpt-oss-20b',       // Tier 1: Fast, strict mode
   STRUCTURED_TIER2: 'openai/gpt-oss-120b',        // Tier 2: Larger model, strict mode
-  STRUCTURED_TIER3: 'openai/gpt-oss-120b',        // Tier 3: Same model, best-effort mode
-  STRUCTURED_TIER4: 'qwen/qwen3.8-27b', // Tier 4: Different model family
+  STRUCTURED_TIER4: 'qwen/qwen3.8-27b', // Tier 3 (was Tier 4): Different model family
   // Deprecated (kept for backward compatibility, no longer used)
   STRUCTURED_OUTPUT: 'openai/gpt-oss-20b',
   STRUCTURED_FALLBACK: 'openai/gpt-oss-120b', // Replaced broken moonshotai model
@@ -219,6 +218,12 @@ function recordCircuitBreakerFailure(model: string): void {
   }
 }
 
+enum TierIndex {
+  T1 = 0,
+  T2 = 1,
+  T3 = 2,
+}
+
 // Tier configuration for structured outputs
 interface FallbackTier {
   model: string;
@@ -228,30 +233,9 @@ interface FallbackTier {
 }
 
 const STRUCTURED_OUTPUT_TIERS: FallbackTier[] = [
-  {
-    model: MODELS.STRUCTURED_PRIMARY,
-    strict: true,
-    temperature: 0.3,
-    description: 'Tier 1: Fast primary (strict mode)'
-  },
-  {
-    model: MODELS.STRUCTURED_TIER2,
-    strict: true,
-    temperature: 0.2,  // Lower temp for larger model
-    description: 'Tier 2: Larger model (strict mode, lower temp)'
-  },
-  {
-    model: MODELS.STRUCTURED_TIER3,
-    strict: false,
-    temperature: 0.3,
-    description: 'Tier 3: Best-effort mode (same large model)'
-  },
-  {
-    model: MODELS.STRUCTURED_TIER4,
-    strict: false,
-    temperature: 0.5,
-    description: 'Tier 4: Different model family (best-effort)'
-  }
+  { model: 'openai/gpt-oss-20b',  strict: true, temperature: 0.3, description: 'Tier 1: Fast primary (strict mode)' },
+  { model: 'openai/gpt-oss-120b', strict: true, temperature: 0.2, description: 'Tier 2: Larger model (strict mode, lower temp)' },
+  { model: 'qwen/qwen3.8-27b',    strict: true, temperature: 0.5, description: 'Tier 3: Different family (strict mode)' },
 ];
 
 // Helper: Attempt single generation
@@ -337,11 +321,9 @@ function determineNextAction(
   switch (error.type) {
     case GroqErrorType.TRUNCATED:
     case GroqErrorType.JSON_VALIDATE_FAILED:
-      // Skip strict mode tiers, go to next tier (index 2+)
-      return { wait: 300, retry: false, skipToTier: Math.max(2, currentTier + 1) };
+      return { wait: 300, retry: false, skipToTier: Math.max(TierIndex.T2, currentTier + 1) };
 
     case GroqErrorType.MODEL_NOT_FOUND:
-      // Skip to next tier immediately
       return { wait: null, retry: false, skipToTier: currentTier + 1 };
 
     case GroqErrorType.RATE_LIMIT: {
@@ -353,16 +335,13 @@ function determineNextAction(
     }
 
     case GroqErrorType.TIMEOUT:
-      // Skip to best-effort mode (faster)
-      return { wait: 500, retry: false, skipToTier: 2 };
+      return { wait: 500, retry: false, skipToTier: TierIndex.T2 };
 
     case GroqErrorType.CONTEXT_LENGTH:
-      // Can't recover, skip to different model (Tier 4, index 3)
-      return { wait: null, retry: false, skipToTier: 3 };
+      return { wait: null, retry: false, skipToTier: TierIndex.T3 };
 
     case GroqErrorType.GENERIC_API_ERROR:
-      // Wait and retry once, then skip
-      return { wait: 1000, retry: currentTier < 2, skipToTier: null };
+      return { wait: 1000, retry: currentTier < TierIndex.T2, skipToTier: null };
 
     default:
       // Unknown error, proceed to next tier
