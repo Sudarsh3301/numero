@@ -6,6 +6,7 @@ function getGroqClient(): Groq {
   if (!groqInstance) {
     groqInstance = new Groq({
       apiKey: process.env.GROQ_API_KEY || '',
+      maxRetries: 0,
     });
   }
   return groqInstance;
@@ -343,10 +344,13 @@ function determineNextAction(
       // Skip to next tier immediately
       return { wait: null, retry: false, skipToTier: currentTier + 1 };
 
-    case GroqErrorType.RATE_LIMIT:
-      // Exponential backoff, retry same tier once, then skip
-      const backoff = Math.min(2000 * Math.pow(2, currentTier), 8000);
-      return { wait: backoff, retry: currentTier === 0, skipToTier: null };
+    case GroqErrorType.RATE_LIMIT: {
+      const retryAfterSec = error?.originalError?.headers?.['retry-after'];
+      const waitMs = retryAfterSec
+        ? Number(retryAfterSec) * 1000
+        : Math.min(2000 * Math.pow(2, currentTier), 8000);
+      return { wait: waitMs, retry: false, skipToTier: currentTier + 1 };
+    }
 
     case GroqErrorType.TIMEOUT:
       // Skip to best-effort mode (faster)
