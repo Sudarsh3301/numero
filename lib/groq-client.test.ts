@@ -124,7 +124,13 @@ describe('Groq Client Error Handling', () => {
       expect(MODELS.STRUCTURED_PRIMARY).toBe('openai/gpt-oss-20b');
       expect(MODELS.STRUCTURED_TIER2).toBe('openai/gpt-oss-120b');
       expect(MODELS.STRUCTURED_TIER3).toBe('openai/gpt-oss-120b');
-      expect(MODELS.STRUCTURED_TIER4).toBe('meta-llama/llama-4-scout-17b-16e-instruct');
+    });
+
+    it('should not use the decommissioned Tier 4 model (404 model_not_found on Groq)', () => {
+      // meta-llama/llama-4-scout-17b-16e-instruct no longer exists on Groq's
+      // model catalog (confirmed via groq-docs/models.md and live 404s in logs.md).
+      // Tier 4 must point at a model that is actually still served.
+      expect(MODELS.STRUCTURED_TIER4).not.toBe('meta-llama/llama-4-scout-17b-16e-instruct');
     });
 
     it('should not use broken moonshotai model', () => {

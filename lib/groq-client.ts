@@ -18,7 +18,7 @@ export const MODELS = {
   STRUCTURED_PRIMARY: 'openai/gpt-oss-20b',       // Tier 1: Fast, strict mode
   STRUCTURED_TIER2: 'openai/gpt-oss-120b',        // Tier 2: Larger model, strict mode
   STRUCTURED_TIER3: 'openai/gpt-oss-120b',        // Tier 3: Same model, best-effort mode
-  STRUCTURED_TIER4: 'meta-llama/llama-4-scout-17b-16e-instruct', // Tier 4: Different model family
+  STRUCTURED_TIER4: 'qwen/qwen3.8-27b', // Tier 4: Different model family
   // Deprecated (kept for backward compatibility, no longer used)
   STRUCTURED_OUTPUT: 'openai/gpt-oss-20b',
   STRUCTURED_FALLBACK: 'openai/gpt-oss-120b', // Replaced broken moonshotai model

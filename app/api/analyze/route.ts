@@ -375,7 +375,10 @@ export async function POST(request: NextRequest) {
         [{ role: 'user', content: buildArchetypePrompt(mode, signals) }],
         {
           temperature: 0.3,
-          maxTokens: 400,
+          // No maxTokens: strict-mode schema decoding needs headroom to close
+          // all required fields (3 archetypes x name+description); 400 was
+          // truncating output mid-structure, causing json_validate_failed with
+          // an empty failed_generation on both Tier 1 and Tier 3.
           responseFormat: {
             type: 'json_schema',
             json_schema: buildArchetypeSchema(mode),
