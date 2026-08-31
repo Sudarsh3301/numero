@@ -49,7 +49,15 @@ export enum GroqErrorType {
   TIMEOUT = 'timeout',
   CONTEXT_LENGTH = 'context_length',
   GENERIC_API_ERROR = 'generic_api_error',
+  TRUNCATED = 'truncated',
   UNKNOWN = 'unknown'
+}
+
+class TruncatedOutputError extends Error {
+  constructor(model: string, completionTokens?: number) {
+    super(`Output truncated by token limit on model ${model} (completion_tokens: ${completionTokens ?? 'unknown'})`);
+    this.name = 'TruncatedOutputError';
+  }
 }
 
 export interface CategorizedError {
@@ -72,6 +80,11 @@ export function categorizeGroqError(error: any): CategorizedError {
       message,
       originalError: error
     };
+  }
+
+  // Truncated output (token limit mid-structure)
+  if (error instanceof TruncatedOutputError) {
+    return { type: GroqErrorType.TRUNCATED, status: 0, message: error.message, originalError: error };
   }
 
   // JSON validation failures
@@ -266,6 +279,10 @@ async function attemptGeneration(
       ...(responseFormat && { response_format: responseFormat }),
     });
 
+    if (response.choices[0]?.finish_reason === 'length') {
+      throw new TruncatedOutputError(model, response.usage?.completion_tokens);
+    }
+
     const content = response.choices[0]?.message?.content;
     if (!content) {
       throw new Error('Empty response from Groq');
@@ -317,8 +334,9 @@ function determineNextAction(
   currentTier: number
 ): { wait: number | null; retry: boolean; skipToTier: number | null } {
   switch (error.type) {
+    case GroqErrorType.TRUNCATED:
     case GroqErrorType.JSON_VALIDATE_FAILED:
-      // Skip strict mode tiers, go to best-effort (Tier 3, index 2)
+      // Skip strict mode tiers, go to next tier (index 2+)
       return { wait: 300, retry: false, skipToTier: Math.max(2, currentTier + 1) };
 
     case GroqErrorType.MODEL_NOT_FOUND:
