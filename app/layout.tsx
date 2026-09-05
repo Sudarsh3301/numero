@@ -1,12 +1,13 @@
-import { Orbitron, Inter, JetBrains_Mono } from 'next/font/google';
+import { Newsreader, Inter, JetBrains_Mono } from 'next/font/google';
 import './globals.css';
 import { Analytics } from "@vercel/analytics/next";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 
-const orbitron = Orbitron({
+const newsreader = Newsreader({
   subsets: ['latin'],
-  weight: ['400', '600', '700', '900'],
-  variable: '--font-orbitron',
+  weight: ['300', '400', '500', '600', '700'],
+  style: ['normal', 'italic'],
+  variable: '--font-newsreader',
   display: 'swap',
 });
 
@@ -36,7 +37,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body className={`${orbitron.variable} ${inter.variable} ${jetbrainsMono.variable}`}>
+      <body className={`${newsreader.variable} ${inter.variable} ${jetbrainsMono.variable}`}>
         {children}
         <Analytics />
         <SpeedInsights />

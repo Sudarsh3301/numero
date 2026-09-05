@@ -10,10 +10,10 @@ interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
 export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
   ({ className, variant = 'primary', size = 'md', isLoading = false, disabled, children, ...props }, ref) => {
     const variants = {
-      primary: 'bg-gradient-mystic text-white shadow-glow-mystic hover:shadow-glow-mystic hover:scale-105',
+      primary: 'bg-[var(--color-person-a)] text-[#1a1408] shadow-lg hover:scale-105',
       secondary: 'bg-white/10 text-white border border-white/20 hover:bg-white/15',
-      solar: 'bg-gradient-solar text-white shadow-glow-solar hover:shadow-glow-solar hover:scale-105',
-      leaf: 'bg-gradient-leaf text-white shadow-glow-leaf hover:scale-105',
+      solar: 'bg-[var(--color-person-a)] text-[#1a1408] shadow-lg hover:scale-105',
+      leaf: 'bg-success text-white shadow-lg hover:scale-105',
     };
 
     const sizes = {
@@ -30,7 +30,7 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
           'rounded-bio font-retro font-bold',
           'transition-all duration-300',
           'disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:scale-100',
-          'focus:outline-none focus:ring-2 focus:ring-solar-500/50',
+          'focus:outline-none focus:ring-2 focus:ring-[var(--color-person-a)]/50',
           variants[variant],
           sizes[size],
           className

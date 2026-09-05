@@ -11,16 +11,16 @@ export const Card = forwardRef<HTMLDivElement, CardProps>(
   ({ className, variant = 'default', glow = false, pattern = false, children, ...props }, ref) => {
     const variants = {
       default: 'bg-white/5 border-white/10',
-      solar: 'bg-gradient-to-br from-solar-500/10 to-transparent border-solar-500/30',
-      leaf: 'bg-gradient-to-br from-leaf-400/10 to-transparent border-leaf-400/30',
-      mystic: 'bg-gradient-to-br from-mystic-purple-500/10 to-transparent border-mystic-purple-500/30',
+      solar: 'bg-gradient-to-br from-[var(--color-person-a)]/10 to-transparent border-[var(--color-person-a)]/30',
+      leaf: 'bg-gradient-to-br from-success/10 to-transparent border-success/30',
+      mystic: 'bg-gradient-to-br from-[var(--color-person-b)]/10 to-transparent border-[var(--color-person-b)]/30',
     };
 
     const glowClasses = {
       default: 'shadow-lg',
-      solar: 'shadow-glow-solar',
-      leaf: 'shadow-glow-leaf',
-      mystic: 'shadow-glow-mystic',
+      solar: 'shadow-lg',
+      leaf: 'shadow-lg',
+      mystic: 'shadow-lg',
     };
 
     return (

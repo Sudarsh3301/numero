@@ -20,7 +20,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
             'w-full px-4 py-2.5 rounded-lg',
             'bg-white/5 border border-white/10',
             'text-white placeholder:text-white/30',
-            'focus:outline-none focus:ring-2 focus:ring-solar-500/50 focus:border-solar-500/30',
+            'focus:outline-none focus:ring-2 focus:ring-[var(--color-person-a)]/50 focus:border-[var(--color-person-a)]/30',
             'transition-all duration-200',
             className
           )}

@@ -25,14 +25,14 @@ export const PlanetDayCard = memo(function PlanetDayCard({
         📅 Favorable Days & Colors · {label}
       </div>
 
-      <div className="mb-2.5 p-2.5 bg-mystic-purple-500/10 rounded-lg">
-        <div className="text-[11px] text-mystic-purple-400 font-bold mb-1">
+      <div className="mb-2.5 p-2.5 bg-[var(--color-person-a)]/10 rounded-lg">
+        <div className="text-[11px] text-[var(--color-person-a)] font-bold mb-1">
           Driver {driver} ({driverPlanet}) — {driverDay.day}
         </div>
         <div className="flex gap-2 text-[10px]">
           <div className="flex-1">
             <span className="text-white/40">Use: </span>
-            <span className="text-leaf-400">{driverDay.colorsToUse.join(", ")}</span>
+            <span className="text-success">{driverDay.colorsToUse.join(", ")}</span>
           </div>
           {driverDay.colorsToAvoid.length > 0 && (
             <div className="flex-1">
@@ -50,7 +50,7 @@ export const PlanetDayCard = memo(function PlanetDayCard({
         <div className="flex gap-2 text-[10px]">
           <div className="flex-1">
             <span className="text-white/40">Use: </span>
-            <span className="text-leaf-400">{conductorDay.colorsToUse.join(", ")}</span>
+            <span className="text-success">{conductorDay.colorsToUse.join(", ")}</span>
           </div>
           {conductorDay.colorsToAvoid.length > 0 && (
             <div className="flex-1">

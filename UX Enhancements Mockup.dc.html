@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Newsreader:wght@500;600;700;800&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;600&display=swap');
+  body { margin: 0; background: #0b0a08; }
+  @keyframes cellIn { from { opacity: 0; transform: translateY(6px) scale(0.9); } to { opacity: 1; transform: translateY(0) scale(1); } }
+  @keyframes shimmer { 0% { background-position: -200px 0; } 100% { background-position: 200px 0; } }
+  .om-skel { background: linear-gradient(90deg, rgba(255,248,235,0.05) 25%, rgba(255,248,235,0.1) 37%, rgba(255,248,235,0.05) 63%); background-size: 400px 100%; animation: shimmer 1.4s ease infinite; }
+</style>
+</helmet>
+
+<div style="min-height:100vh;background:linear-gradient(160deg,#100d09 0%,#181310 55%,#0b0a08 100%);font-family:'Inter',sans-serif;color:#f2ede0;padding:32px 20px 80px">
+  <div style="max-width:960px;margin:0 auto">
+
+    <div style="text-align:center;margin-bottom:8px;font-size:24px;font-weight:700;font-family:'Newsreader',serif">UX &amp; UI Enhancement Mockups</div>
+    <div style="text-align:center;color:rgba(242,237,224,0.45);font-size:12px;margin-bottom:40px">Six proposals, each shown live — Warm Gold Midnight theme</div>
+
+    <!-- 1. Early summary strip -->
+    <div style="margin-bottom:48px">
+      <div style="font-size:11px;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;color:#e0b877;margin-bottom:6px">01 · Single-mode summary strip</div>
+      <div style="font-size:13px;color:rgba(242,237,224,0.55);margin-bottom:14px">Surface Missing/Strong right under the header instead of only inside the Lo Shu grid section, so the headline read is instant.</div>
+      <div style="background:rgba(255,248,235,0.03);border:1px solid rgba(255,248,235,0.1);border-radius:14px;padding:16px 20px;display:flex;gap:24px;flex-wrap:wrap;align-items:center">
+        <div style="font-size:13px;font-weight:600;font-family:'Newsreader',serif">Meera's Numbers</div>
+        <div style="display:flex;gap:6px;align-items:baseline">
+          <span style="font-size:10px;color:rgba(242,237,224,0.4);text-transform:uppercase;letter-spacing:0.06em">Missing</span>
+          <span style="font-size:14px;font-weight:600;color:#c97b6a;font-family:'JetBrains Mono',monospace">2 6 8</span>
+        </div>
+        <div style="display:flex;gap:6px;align-items:baseline">
+          <span style="font-size:10px;color:rgba(242,237,224,0.4);text-transform:uppercase;letter-spacing:0.06em">Strong</span>
+          <span style="font-size:14px;font-weight:600;color:#c9a24b;font-family:'JetBrains Mono',monospace">7 9</span>
+        </div>
+        <div style="display:flex;gap:6px;align-items:baseline">
+          <span style="font-size:10px;color:rgba(242,237,224,0.4);text-transform:uppercase;letter-spacing:0.06em">Personal Year</span>
+          <span style="font-size:14px;font-weight:600;color:#8dc498;font-family:'JetBrains Mono',monospace">3</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- 2. Loading skeleton -->
+    <div style="margin-bottom:48px">
+      <div style="font-size:11px;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;color:#e0b877;margin-bottom:6px">02 · Loading skeleton</div>
+      <div style="font-size:13px;color:rgba(242,237,224,0.55);margin-bottom:14px">Between "Reveal My Numbers" and results, show shaped placeholders instead of a blank gap.</div>
+      <div onClick="{{ toggleLoading }}" style="display:inline-block;margin-bottom:14px;padding:8px 16px;border-radius:8px;background:rgba(201,162,75,0.15);border:1px solid rgba(201,162,75,0.4);color:#e0b877;font-size:12px;font-weight:600;cursor:pointer">{{ loadingBtnLabel }}</div>
+
+      <sc-if value="{{ showSkeleton }}" hint-placeholder-val="{{ true }}">
+        <div style="background:rgba(255,248,235,0.03);border:1px solid rgba(255,248,235,0.1);border-radius:14px;padding:20px">
+          <div class="om-skel" style="width:120px;height:14px;border-radius:6px;margin-bottom:14px"></div>
+          <div style="display:grid;grid-template-columns:repeat(3,44px);gap:4px;margin-bottom:16px">
+            <div class="om-skel" style="width:44px;height:44px;border-radius:7px"></div>
+            <div class="om-skel" style="width:44px;height:44px;border-radius:7px"></div>
+            <div class="om-skel" style="width:44px;height:44px;border-radius:7px"></div>
+            <div class="om-skel" style="width:44px;height:44px;border-radius:7px"></div>
+            <div class="om-skel" style="width:44px;height:44px;border-radius:7px"></div>
+            <div class="om-skel" style="width:44px;height:44px;border-radius:7px"></div>
+            <div class="om-skel" style="width:44px;height:44px;border-radius:7px"></div>
+            <div class="om-skel" style="width:44px;height:44px;border-radius:7px"></div>
+            <div class="om-skel" style="width:44px;height:44px;border-radius:7px"></div>
+          </div>
+          <div class="om-skel" style="width:80%;height:10px;border-radius:5px;margin-bottom:8px"></div>
+          <div class="om-skel" style="width:60%;height:10px;border-radius:5px"></div>
+        </div>
+      </sc-if>
+      <sc-if value="{{ !showSkeleton }}" hint-placeholder-val="{{ false }}">
+        <div style="background:rgba(255,248,235,0.03);border:1px solid rgba(255,248,235,0.1);border-radius:14px;padding:20px;font-size:12px;color:rgba(242,237,224,0.4);text-align:center">Resolved state — grid, labels and copy fade in over the skeleton's shape.</div>
+      </sc-if>
+    </div>
+
+    <!-- 3. Responsive gauge -->
+    <div style="margin-bottom:48px">
+      <div style="font-size:11px;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;color:#e0b877;margin-bottom:6px">03 · Responsive score gauge</div>
+      <div style="font-size:13px;color:rgba(242,237,224,0.55);margin-bottom:14px">The 192px gauge currently doesn't shrink on narrow screens. Desktop vs. mobile size step, side by side:</div>
+      <div style="display:flex;gap:24px;align-items:center;flex-wrap:wrap">
+        <div style="text-align:center">
+          <div style="font-size:10px;color:rgba(242,237,224,0.4);margin-bottom:8px">DESKTOP · 168px</div>
+          <div style="width:168px;height:168px;border-radius:50%;border:6px solid rgba(255,248,235,0.05);position:relative;display:flex;align-items:center;justify-content:center">
+            <div style="position:absolute;inset:0;border-radius:50%;border-top:6px solid #6fae7c;border-left:6px solid #6fae7c;opacity:0.8;transform:rotate(146deg)"></div>
+            <div style="font-size:36px;font-weight:700;font-family:'Newsreader',serif;color:#8dc498">78%</div>
+          </div>
+        </div>
+        <div style="text-align:center">
+          <div style="font-size:10px;color:rgba(242,237,224,0.4);margin-bottom:8px">MOBILE · 108px</div>
+          <div style="width:108px;height:108px;border-radius:50%;border:4px solid rgba(255,248,235,0.05);position:relative;display:flex;align-items:center;justify-content:center">
+            <div style="position:absolute;inset:0;border-radius:50%;border-top:4px solid #6fae7c;border-left:4px solid #6fae7c;opacity:0.8;transform:rotate(146deg)"></div>
+            <div style="font-size:22px;font-weight:700;font-family:'Newsreader',serif;color:#8dc498">78%</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 4. Retry affordance -->
+    <div style="margin-bottom:48px">
+      <div style="font-size:11px;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;color:#e0b877;margin-bottom:6px">04 · AI Insights retry</div>
+      <div style="font-size:13px;color:rgba(242,237,224,0.55);margin-bottom:14px">If generation fails, offer a retry instead of a dead-end error line.</div>
+      <div onClick="{{ toggleError }}" style="display:inline-block;margin-bottom:14px;padding:8px 16px;border-radius:8px;background:rgba(201,162,75,0.15);border:1px solid rgba(201,162,75,0.4);color:#e0b877;font-size:12px;font-weight:600;cursor:pointer">{{ errorBtnLabel }}</div>
+
+      <sc-if value="{{ showError }}" hint-placeholder-val="{{ false }}">
+        <div style="background:rgba(255,248,235,0.03);border:1px solid rgba(255,248,235,0.1);border-radius:14px;padding:20px;text-align:center">
+          <div style="font-size:13px;color:rgba(242,237,224,0.55);margin-bottom:12px">AI insights temporarily unavailable. Your chart above is unaffected.</div>
+          <div style="display:inline-block;padding:8px 18px;border-radius:8px;background:#c9a24b;color:#1a1408;font-size:12.5px;font-weight:600;cursor:pointer">Retry</div>
+        </div>
+      </sc-if>
+      <sc-if value="{{ !showError }}" hint-placeholder-val="{{ true }}">
+        <div style="background:rgba(255,248,235,0.03);border:1px solid rgba(255,248,235,0.1);border-radius:14px;padding:20px;text-align:center">
+          <div style="font-size:13px;font-weight:600;color:#e0b877;margin-bottom:10px">AI Insights</div>
+          <div style="display:inline-block;padding:10px 20px;border-radius:8px;background:#c9a24b;color:#1a1408;font-size:13px;font-weight:600">Generate AI Insights</div>
+        </div>
+      </sc-if>
+    </div>
+
+    <!-- 5. Entrance animation -->
+    <div style="margin-bottom:48px">
+      <div style="font-size:11px;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;color:#e0b877;margin-bottom:6px">05 · Grid entrance animation</div>
+      <div style="font-size:13px;color:rgba(242,237,224,0.55);margin-bottom:14px">Cells stagger in on reveal instead of popping in all at once.</div>
+      <div onClick="{{ replay }}" style="display:inline-block;margin-bottom:14px;padding:8px 16px;border-radius:8px;background:rgba(201,162,75,0.15);border:1px solid rgba(201,162,75,0.4);color:#e0b877;font-size:12px;font-weight:600;cursor:pointer">Replay</div>
+      <div key="{{ animKey }}" style="display:grid;grid-template-columns:repeat(3,50px);gap:5px">
+        <div style="width:50px;height:50px;border-radius:8px;background:rgba(201,162,75,0.28);border:2px solid #c9a24b;animation:cellIn 0.4s ease 0s both"></div>
+        <div style="width:50px;height:50px;border-radius:8px;background:rgba(201,162,75,0.13);border:1px solid rgba(201,162,75,0.45);animation:cellIn 0.4s ease 0.04s both"></div>
+        <div style="width:50px;height:50px;border-radius:8px;background:rgba(0,0,0,0.2);border:1px dashed rgba(255,248,235,0.15);animation:cellIn 0.4s ease 0.08s both"></div>
+        <div style="width:50px;height:50px;border-radius:8px;background:rgba(201,162,75,0.13);border:1px solid rgba(201,162,75,0.45);animation:cellIn 0.4s ease 0.12s both"></div>
+        <div style="width:50px;height:50px;border-radius:8px;background:rgba(201,162,75,0.28);border:2px solid #c9a24b;animation:cellIn 0.4s ease 0.16s both"></div>
+        <div style="width:50px;height:50px;border-radius:8px;background:rgba(201,162,75,0.13);border:1px solid rgba(201,162,75,0.45);animation:cellIn 0.4s ease 0.2s both"></div>
+        <div style="width:50px;height:50px;border-radius:8px;background:rgba(0,0,0,0.2);border:1px dashed rgba(255,248,235,0.15);animation:cellIn 0.4s ease 0.24s both"></div>
+        <div style="width:50px;height:50px;border-radius:8px;background:rgba(201,162,75,0.13);border:1px solid rgba(201,162,75,0.45);animation:cellIn 0.4s ease 0.28s both"></div>
+        <div style="width:50px;height:50px;border-radius:8px;background:rgba(0,0,0,0.2);border:1px dashed rgba(255,248,235,0.15);animation:cellIn 0.4s ease 0.32s both"></div>
+      </div>
+    </div>
+
+    <!-- 6. Icon badges -->
+    <div>
+      <div style="font-size:11px;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;color:#e0b877;margin-bottom:6px">06 · Number badges on text-dense cards</div>
+      <div style="font-size:13px;color:rgba(242,237,224,0.55);margin-bottom:14px">A small badge anchors the eye before the paragraph, instead of starting cold on a wall of text.</div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:16px">
+        <div style="background:rgba(255,248,235,0.03);border:1px solid rgba(255,248,235,0.1);border-radius:14px;padding:20px;display:flex;gap:14px">
+          <div style="flex-shrink:0;width:44px;height:44px;border-radius:10px;background:rgba(201,162,75,0.18);border:1px solid rgba(201,162,75,0.4);display:flex;align-items:center;justify-content:center;font-family:'Newsreader',serif;font-weight:700;font-size:20px;color:#e0b877">3</div>
+          <div>
+            <div style="font-size:12px;font-weight:600;color:rgba(242,237,224,0.9);margin-bottom:4px">2026 Personal Year</div>
+            <div style="font-size:11.5px;color:rgba(242,237,224,0.55);line-height:1.5">Expression, creativity — a year for communicating and putting work into the world.</div>
+          </div>
+        </div>
+        <div style="background:rgba(255,248,235,0.03);border:1px solid rgba(255,248,235,0.1);border-radius:14px;padding:20px;display:flex;gap:14px">
+          <div style="flex-shrink:0;width:44px;height:44px;border-radius:10px;background:rgba(111,174,124,0.15);border:1px solid rgba(111,174,124,0.4);display:flex;align-items:center;justify-content:center;font-size:18px">🏥</div>
+          <div>
+            <div style="font-size:12px;font-weight:600;color:rgba(242,237,224,0.9);margin-bottom:4px">Health Profile · Age 32</div>
+            <div style="font-size:11.5px;color:rgba(242,237,224,0.55);line-height:1.5">Governed by Driver (Ketu) — watch nervous tension and sleep irregularities.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+  state = { showSkeleton: true, showError: false, animKey: 0 };
+
+  renderVals() {
+    return {
+      showSkeleton: this.state.showSkeleton,
+      loadingBtnLabel: this.state.showSkeleton ? 'Show resolved state' : 'Show loading skeleton',
+      toggleLoading: () => this.setState(s => ({ showSkeleton: !s.showSkeleton })),
+      showError: this.state.showError,
+      errorBtnLabel: this.state.showError ? 'Show success state' : 'Simulate failure',
+      toggleError: () => this.setState(s => ({ showError: !s.showError })),
+      animKey: this.state.animKey,
+      replay: () => this.setState(s => ({ animKey: s.animKey + 1 })),
+    };
+  }
+}
+
+</script>
+</body>
+</html>

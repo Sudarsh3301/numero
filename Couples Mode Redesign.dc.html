@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Newsreader:wght@500;600;700;800&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;600&display=swap');
+  body { margin: 0; background: #0b0a08; }
+</style>
+</helmet>
+
+<div style="min-height:100vh;background:linear-gradient(160deg,#100d09 0%,#181310 55%,#0b0a08 100%);font-family:'Inter',sans-serif;color:#f2ede0;padding:32px 20px 64px">
+
+  <div style="max-width:1140px;margin:0 auto">
+
+    <div style="background:rgba(217,164,92,0.08);border:1px solid rgba(217,164,92,0.25);border-radius:8px;padding:10px 16px;font-size:12px;color:#e0b877;margin-bottom:28px;font-family:Inter,sans-serif;text-align:center">
+      Design mockup with sample data — layout &amp; visual system only, not wired to the live calculator.
+    </div>
+
+    <div style="text-align:center;margin-bottom:32px">
+      <div style="font-size:30px;margin-bottom:8px;color:#c9a24b">☯</div>
+      <div style="margin:0;font-size:26px;font-weight:700;font-family:'Newsreader',serif;letter-spacing:0.01em;color:#f2ede0">Pure Math Based Numerology</div>
+      <div style="color:rgba(242,237,224,0.4);font-size:12px;margin-top:8px;letter-spacing:0.04em">PURE MATH → AI TO SUMMARIZE IT</div>
+    </div>
+
+    <div style="display:flex;gap:12px;margin-bottom:24px;flex-wrap:wrap">
+      <div style="flex:2;min-width:200px;display:flex;gap:4px;background:rgba(255,248,235,0.04);border-radius:10px;padding:4px">
+        <div style="flex:1;text-align:center;padding:9px 0;border-radius:7px;font-size:13px;font-weight:600;color:rgba(242,237,224,0.35)">Individual</div>
+        <div style="flex:1;text-align:center;padding:9px 0;border-radius:7px;font-size:13px;font-weight:600;background:rgba(201,162,75,0.16);border:1px solid rgba(201,162,75,0.5);color:#e0b877">Couple</div>
+      </div>
+      <div style="flex:1;min-width:100px;display:flex;gap:4px;background:rgba(255,248,235,0.04);border-radius:10px;padding:4px">
+        <div style="flex:1;text-align:center;padding:9px 0;border-radius:7px;font-size:13px;font-weight:600;background:rgba(201,162,75,0.16);border:1px solid rgba(201,162,75,0.5);color:#e0b877">EN</div>
+        <div style="flex:1;text-align:center;padding:9px 0;border-radius:7px;font-size:13px;font-weight:600;color:rgba(242,237,224,0.35)">हिं</div>
+      </div>
+    </div>
+
+    <!-- PERSON FORMS -->
+    <div style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px;margin-bottom:16px">
+      <div style="background:rgba(201,162,75,0.05);border:1px solid rgba(201,162,75,0.25);border-radius:14px;padding:20px">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:14px">
+          <div style="width:7px;height:7px;border-radius:50%;background:#c9a24b"></div>
+          <div style="font-size:11px;font-weight:600;letter-spacing:0.06em;color:rgba(242,237,224,0.5)">PERSON 1</div>
+        </div>
+        <input placeholder="Name" value="Meera" readonly style="width:100%;box-sizing:border-box;background:rgba(255,248,235,0.05);border:1px solid rgba(255,248,235,0.12);border-radius:8px;color:#f2ede0;padding:10px 14px;font-size:13px;margin-bottom:8px;font-family:Inter,sans-serif" />
+        <input value="1994-03-22" readonly style="width:100%;box-sizing:border-box;background:rgba(255,248,235,0.05);border:1px solid rgba(255,248,235,0.12);border-radius:8px;color:#f2ede0;padding:10px 14px;font-size:13px;margin-bottom:8px;font-family:Inter,sans-serif" />
+        <div style="display:flex;gap:6px">
+          <div style="flex:1;text-align:center;padding:8px 0;border-radius:7px;font-size:12px;font-weight:600;background:rgba(201,162,75,0.18);border:1px solid rgba(201,162,75,0.45);color:#e0b877">♀ Female</div>
+          <div style="flex:1;text-align:center;padding:8px 0;border-radius:7px;font-size:12px;font-weight:600;background:rgba(255,248,235,0.04);color:rgba(242,237,224,0.35)">♂ Male</div>
+        </div>
+      </div>
+
+      <div style="background:rgba(95,143,174,0.06);border:1px solid rgba(95,143,174,0.28);border-radius:14px;padding:20px">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:14px">
+          <div style="width:7px;height:7px;border-radius:50%;background:#5f8fae"></div>
+          <div style="font-size:11px;font-weight:600;letter-spacing:0.06em;color:rgba(242,237,224,0.5)">PERSON 2</div>
+        </div>
+        <input placeholder="Name" value="Rohan" readonly style="width:100%;box-sizing:border-box;background:rgba(255,248,235,0.05);border:1px solid rgba(255,248,235,0.12);border-radius:8px;color:#f2ede0;padding:10px 14px;font-size:13px;margin-bottom:8px;font-family:Inter,sans-serif" />
+        <input value="1991-11-08" readonly style="width:100%;box-sizing:border-box;background:rgba(255,248,235,0.05);border:1px solid rgba(255,248,235,0.12);border-radius:8px;color:#f2ede0;padding:10px 14px;font-size:13px;margin-bottom:8px;font-family:Inter,sans-serif" />
+        <div style="display:flex;gap:6px">
+          <div style="flex:1;text-align:center;padding:8px 0;border-radius:7px;font-size:12px;font-weight:600;background:rgba(255,248,235,0.04);color:rgba(242,237,224,0.35)">♀ Female</div>
+          <div style="flex:1;text-align:center;padding:8px 0;border-radius:7px;font-size:12px;font-weight:600;background:rgba(95,143,174,0.2);border:1px solid rgba(95,143,174,0.5);color:#a9cbe0">♂ Male</div>
+        </div>
+      </div>
+    </div>
+
+    <div style="width:100%;text-align:center;padding:13px 0;border-radius:10px;background:#c9a24b;color:#1a1408;font-size:14px;font-weight:700;box-shadow:0 4px 20px rgba(201,162,75,0.25);margin-bottom:40px;font-family:'Newsreader',serif;letter-spacing:0.01em">Reveal Your Numbers</div>
+
+    <!-- PARTNERSHIP SCORE -->
+    <div style="background:rgba(255,248,235,0.03);border:1px solid rgba(255,248,235,0.1);border-radius:16px;padding:28px;display:flex;gap:32px;flex-wrap:wrap;align-items:center;margin-bottom:48px">
+      <div style="flex-shrink:0;width:168px;height:168px;border-radius:50%;border:6px solid rgba(255,248,235,0.05);position:relative;display:flex;flex-direction:column;align-items:center;justify-content:center;margin:0 auto">
+        <div style="position:absolute;inset:0;border-radius:50%;border-top:6px solid #6fae7c;border-left:6px solid #6fae7c;opacity:0.8;transform:rotate(146deg)"></div>
+        <div style="font-size:40px;font-weight:700;font-family:'Newsreader',serif;color:#8dc498">78%</div>
+        <div style="font-size:11px;font-weight:600;letter-spacing:0.08em;color:rgba(242,237,224,0.5);text-transform:uppercase;margin-top:4px">Good Match</div>
+      </div>
+      <div style="flex:1;min-width:260px">
+        <div style="font-size:19px;font-weight:700;font-family:'Newsreader',serif;margin-bottom:14px">Partnership Match</div>
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:10px">
+          <div style="background:rgba(111,174,124,0.1);border:1px solid rgba(111,174,124,0.3);border-radius:10px;padding:12px 14px">
+            <div style="font-size:10px;font-weight:600;letter-spacing:0.06em;text-transform:uppercase;color:#8dc498;margin-bottom:4px">Strengths</div>
+            <div style="font-size:12.5px;color:rgba(242,237,224,0.8);line-height:1.5">Meera completes 2 of Rohan's missing numbers. Driver planets are neutral — easy collaboration.</div>
+          </div>
+          <div style="background:rgba(201,138,79,0.1);border:1px solid rgba(201,138,79,0.3);border-radius:10px;padding:12px 14px">
+            <div style="font-size:10px;font-weight:600;letter-spacing:0.06em;text-transform:uppercase;color:#d9a45c;margin-bottom:4px">Mutual Gap</div>
+            <div style="font-size:12.5px;color:rgba(242,237,224,0.8);line-height:1.5">Both are missing Number 6 — home &amp; responsibility may need outside support.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SIDE-BY-SIDE COMPARISON -->
+    <div style="display:flex;align-items:baseline;justify-content:space-between;margin-bottom:16px;flex-wrap:wrap;gap:8px">
+      <div style="font-size:20px;font-weight:700;font-family:'Newsreader',serif">Side by Side</div>
+      <div style="display:flex;gap:16px;font-size:12px;font-weight:500">
+        <div style="display:flex;align-items:center;gap:6px"><div style="width:8px;height:8px;border-radius:50%;background:#c9a24b"></div>Meera</div>
+        <div style="display:flex;align-items:center;gap:6px"><div style="width:8px;height:8px;border-radius:50%;background:#5f8fae"></div>Rohan</div>
+      </div>
+    </div>
+
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:16px;margin-bottom:48px">
+
+      <!-- Lo Shu grids -->
+      <div style="background:rgba(255,248,235,0.03);border:1px solid rgba(255,248,235,0.1);border-radius:14px;padding:20px">
+        <div style="font-size:13px;font-weight:600;color:rgba(242,237,224,0.9);margin-bottom:14px">Lo Shu Grid</div>
+        <div style="display:flex;gap:20px;justify-content:center;flex-wrap:wrap">
+          <div style="display:grid;grid-template-columns:repeat(3,44px);gap:4px">
+            <div style="width:44px;height:44px;border-radius:7px;background:rgba(201,162,75,0.28);border:2px solid #c9a24b;display:flex;align-items:center;justify-content:center;font-family:'JetBrains Mono',monospace;font-weight:600;font-size:12px">44</div>
+            <div style="width:44px;height:44px;border-radius:7px;background:rgba(201,162,75,0.28);border:2px solid #c9a24b;display:flex;align-items:center;justify-content:center;font-family:'JetBrains Mono',monospace;font-weight:600;font-size:12px">99</div>
+            <div style="width:44px;height:44px;border-radius:7px;background:rgba(0,0,0,0.2);border:1px dashed rgba(255,248,235,0.15);display:flex;align-items:center;justify-content:center;color:rgba(255,248,235,0.15)">·</div>
+            <div style="width:44px;height:44px;border-radius:7px;background:rgba(201,162,75,0.13);border:1px solid rgba(201,162,75,0.45);display:flex;align-items:center;justify-content:center;font-family:'JetBrains Mono',monospace;font-weight:500;font-size:12px;color:rgba(242,237,224,0.9)">3</div>
+            <div style="width:44px;height:44px;border-radius:7px;background:rgba(201,162,75,0.13);border:1px solid rgba(201,162,75,0.45);display:flex;align-items:center;justify-content:center;font-family:'JetBrains Mono',monospace;font-weight:500;font-size:12px;color:rgba(242,237,224,0.9)">5</div>
+            <div style="width:44px;height:44px;border-radius:7px;background:rgba(201,162,75,0.28);border:2px solid #c9a24b;display:flex;align-items:center;justify-content:center;font-family:'JetBrains Mono',monospace;font-weight:600;font-size:12px">77</div>
+            <div style="width:44px;height:44px;border-radius:7px;background:rgba(0,0,0,0.2);border:1px dashed rgba(255,248,235,0.15);display:flex;align-items:center;justify-content:center;color:rgba(255,248,235,0.15)">·</div>
+            <div style="width:44px;height:44px;border-radius:7px;background:rgba(201,162,75,0.13);border:1px solid rgba(201,162,75,0.45);display:flex;align-items:center;justify-content:center;font-family:'JetBrains Mono',monospace;font-weight:500;font-size:12px;color:rgba(242,237,224,0.9)">1</div>
+            <div style="width:44px;height:44px;border-radius:7px;background:rgba(0,0,0,0.2);border:1px dashed rgba(255,248,235,0.15);display:flex;align-items:center;justify-content:center;color:rgba(255,248,235,0.15)">·</div>
+          </div>
+          <div style="display:grid;grid-template-columns:repeat(3,44px);gap:4px">
+            <div style="width:44px;height:44px;border-radius:7px;background:rgba(0,0,0,0.2);border:1px dashed rgba(255,248,235,0.15);display:flex;align-items:center;justify-content:center;color:rgba(255,248,235,0.15)">·</div>
+            <div style="width:44px;height:44px;border-radius:7px;background:rgba(95,143,174,0.28);border:2px solid #5f8fae;display:flex;align-items:center;justify-content:center;font-family:'JetBrains Mono',monospace;font-weight:600;font-size:12px">99</div>
+            <div style="width:44px;height:44px;border-radius:7px;background:rgba(95,143,174,0.13);border:1px solid rgba(95,143,174,0.45);display:flex;align-items:center;justify-content:center;font-family:'JetBrains Mono',monospace;font-weight:500;font-size:12px;color:rgba(242,237,224,0.9)">2</div>
+            <div style="width:44px;height:44px;border-radius:7px;background:rgba(0,0,0,0.2);border:1px dashed rgba(255,248,235,0.15);display:flex;align-items:center;justify-content:center;color:rgba(255,248,235,0.15)">·</div>
+            <div style="width:44px;height:44px;border-radius:7px;background:rgba(0,0,0,0.2);border:1px dashed rgba(255,248,235,0.15);display:flex;align-items:center;justify-content:center;color:rgba(255,248,235,0.15)">·</div>
+            <div style="width:44px;height:44px;border-radius:7px;background:rgba(95,143,174,0.13);border:1px solid rgba(95,143,174,0.45);display:flex;align-items:center;justify-content:center;font-family:'JetBrains Mono',monospace;font-weight:500;font-size:12px;color:rgba(242,237,224,0.9)">7</div>
+            <div style="width:44px;height:44px;border-radius:7px;background:rgba(95,143,174,0.13);border:1px solid rgba(95,143,174,0.45);display:flex;align-items:center;justify-content:center;font-family:'JetBrains Mono',monospace;font-weight:500;font-size:12px;color:rgba(242,237,224,0.9)">8</div>
+            <div style="width:44px;height:44px;border-radius:7px;background:rgba(95,143,174,0.28);border:2px solid #5f8fae;display:flex;align-items:center;justify-content:center;font-family:'JetBrains Mono',monospace;font-weight:600;font-size:12px">11</div>
+            <div style="width:44px;height:44px;border-radius:7px;background:rgba(95,143,174,0.13);border:1px solid rgba(95,143,174,0.45);display:flex;align-items:center;justify-content:center;font-family:'JetBrains Mono',monospace;font-weight:500;font-size:12px;color:rgba(242,237,224,0.9)">4</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Missing / Strong -->
+      <div style="background:rgba(255,248,235,0.03);border:1px solid rgba(255,248,235,0.1);border-radius:14px;padding:20px">
+        <div style="font-size:13px;font-weight:600;color:rgba(242,237,224,0.9);margin-bottom:14px">Missing &amp; Strong</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+          <div>
+            <div style="font-size:10px;font-weight:600;letter-spacing:0.06em;text-transform:uppercase;color:rgba(242,237,224,0.4);margin-bottom:6px">Missing</div>
+            <div style="font-size:15px;font-weight:600;color:#c97b6a;margin-bottom:14px;font-family:'JetBrains Mono',monospace">2 6 8</div>
+            <div style="font-size:10px;font-weight:600;letter-spacing:0.06em;text-transform:uppercase;color:rgba(242,237,224,0.4);margin-bottom:6px">Strong</div>
+            <div style="font-size:15px;font-weight:600;color:#c9a24b;font-family:'JetBrains Mono',monospace">7 9</div>
+          </div>
+          <div>
+            <div style="font-size:10px;font-weight:600;letter-spacing:0.06em;text-transform:uppercase;color:rgba(242,237,224,0.4);margin-bottom:6px">Missing</div>
+            <div style="font-size:15px;font-weight:600;color:#c97b6a;margin-bottom:14px;font-family:'JetBrains Mono',monospace">3 5 6</div>
+            <div style="font-size:10px;font-weight:600;letter-spacing:0.06em;text-transform:uppercase;color:rgba(242,237,224,0.4);margin-bottom:6px">Strong</div>
+            <div style="font-size:15px;font-weight:600;color:#5f8fae;font-family:'JetBrains Mono',monospace">1 9</div>
+          </div>
+        </div>
+        <div style="margin-top:14px;padding:10px 12px;background:rgba(201,138,79,0.08);border:1px solid rgba(201,138,79,0.25);border-radius:8px;font-size:11.5px;color:rgba(242,237,224,0.7);line-height:1.5">Both miss Number 6 — no exchange there, worth an external remedy.</div>
+      </div>
+
+      <!-- Plane balance -->
+      <div style="background:rgba(255,248,235,0.03);border:1px solid rgba(255,248,235,0.1);border-radius:14px;padding:20px">
+        <div style="font-size:13px;font-weight:600;color:rgba(242,237,224,0.9);margin-bottom:14px">Plane Balance</div>
+
+        <div style="margin-bottom:12px">
+          <div style="font-size:11px;color:rgba(242,237,224,0.5);margin-bottom:5px">Thought</div>
+          <div style="height:7px;border-radius:4px;background:rgba(255,248,235,0.06);overflow:hidden;margin-bottom:3px"><div style="height:100%;width:40%;background:#c9a24b;border-radius:4px"></div></div>
+          <div style="height:7px;border-radius:4px;background:rgba(255,248,235,0.06);overflow:hidden"><div style="height:100%;width:20%;background:#5f8fae;border-radius:4px"></div></div>
+        </div>
+        <div style="margin-bottom:12px">
+          <div style="font-size:11px;color:rgba(242,237,224,0.5);margin-bottom:5px">Emotion</div>
+          <div style="height:7px;border-radius:4px;background:rgba(255,248,235,0.06);overflow:hidden;margin-bottom:3px"><div style="height:100%;width:25%;background:#c9a24b;border-radius:4px"></div></div>
+          <div style="height:7px;border-radius:4px;background:rgba(255,248,235,0.06);overflow:hidden"><div style="height:100%;width:30%;background:#5f8fae;border-radius:4px"></div></div>
+        </div>
+        <div>
+          <div style="font-size:11px;color:rgba(242,237,224,0.5);margin-bottom:5px">Action</div>
+          <div style="height:7px;border-radius:4px;background:rgba(255,248,235,0.06);overflow:hidden;margin-bottom:3px"><div style="height:100%;width:35%;background:#c9a24b;border-radius:4px"></div></div>
+          <div style="height:7px;border-radius:4px;background:rgba(255,248,235,0.06);overflow:hidden"><div style="height:100%;width:50%;background:#5f8fae;border-radius:4px"></div></div>
+        </div>
+      </div>
+
+      <!-- Personal year -->
+      <div style="background:rgba(255,248,235,0.03);border:1px solid rgba(255,248,235,0.1);border-radius:14px;padding:20px">
+        <div style="font-size:13px;font-weight:600;color:rgba(242,237,224,0.9);margin-bottom:14px">2026 Personal Year</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;text-align:center">
+          <div style="background:rgba(201,162,75,0.07);border:1px solid rgba(201,162,75,0.25);border-radius:10px;padding:14px 8px">
+            <div style="font-size:30px;font-weight:700;font-family:'Newsreader',serif;color:#e0b877">3</div>
+            <div style="font-size:11px;color:rgba(242,237,224,0.55);margin-top:2px">Expression, creativity</div>
+          </div>
+          <div style="background:rgba(95,143,174,0.07);border:1px solid rgba(95,143,174,0.25);border-radius:10px;padding:14px 8px">
+            <div style="font-size:30px;font-weight:700;font-family:'Newsreader',serif;color:#a9cbe0">8</div>
+            <div style="font-size:11px;color:rgba(242,237,224,0.55);margin-top:2px">Power, ambition</div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- PER-PERSON TABS -->
+    <div style="display:flex;align-items:baseline;justify-content:space-between;margin-bottom:16px;flex-wrap:wrap;gap:8px">
+      <div style="font-size:20px;font-weight:700;font-family:'Newsreader',serif">Individual Detail</div>
+    </div>
+
+    <div style="display:inline-flex;gap:4px;background:rgba(255,248,235,0.04);border-radius:10px;padding:4px;margin-bottom:20px">
+      <div onClick="{{ setTabP1 }}" style="{{ p1TabStyle }}">Meera</div>
+      <div onClick="{{ setTabP2 }}" style="{{ p2TabStyle }}">Rohan</div>
+    </div>
+
+    <sc-if value="{{ isP1 }}" hint-placeholder-val="{{ true }}">
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:16px;margin-bottom:56px">
+
+        <div style="background:rgba(201,162,75,0.06);border:1.5px solid rgba(201,162,75,0.3);border-radius:14px;padding:20px">
+          <div style="font-size:11px;color:rgba(242,237,224,0.5);margin-bottom:12px;text-align:center;letter-spacing:0.04em">MEERA</div>
+          <div style="display:flex;gap:12px;margin-bottom:14px">
+            <div style="flex:1;text-align:center">
+              <div style="font-size:10px;color:rgba(242,237,224,0.4);margin-bottom:6px">DRIVER</div>
+              <div style="width:56px;height:56px;margin:0 auto 6px;border-radius:10px;background:#c9a24b;display:flex;align-items:center;justify-content:center;font-family:'Newsreader',serif;font-weight:700;font-size:24px;color:#1a1408">7</div>
+              <div style="font-size:11px;font-weight:600;color:#e0b877">Ketu</div>
+            </div>
+            <div style="display:flex;align-items:center;color:rgba(242,237,224,0.2);font-size:18px">+</div>
+            <div style="flex:1;text-align:center">
+              <div style="font-size:10px;color:rgba(242,237,224,0.4);margin-bottom:6px">CONDUCTOR</div>
+              <div style="width:56px;height:56px;margin:0 auto 6px;border-radius:10px;background:rgba(201,162,75,0.25);border:1.5px solid rgba(201,162,75,0.6);display:flex;align-items:center;justify-content:center;font-family:'Newsreader',serif;font-weight:700;font-size:24px;color:#e0b877">4</div>
+              <div style="font-size:11px;font-weight:600;color:#e0b877">Rahu</div>
+            </div>
+          </div>
+          <div style="background:rgba(255,248,235,0.04);border-radius:10px;padding:12px">
+            <div style="display:flex;justify-content:space-between;margin-bottom:6px"><span style="font-size:11px;color:rgba(242,237,224,0.5)">Combination Strength</span><span style="font-size:13px;font-weight:600;color:#5f8fae">4/5</span></div>
+            <div style="font-size:12px;font-weight:600;color:rgba(242,237,224,0.9);margin-bottom:4px">Deep introspection, structured execution</div>
+            <div style="font-size:10.5px;color:rgba(242,237,224,0.45)">Best for: Research, Writing, Architecture</div>
+          </div>
+        </div>
+
+        <div style="background:rgba(255,248,235,0.03);border:1px solid rgba(255,248,235,0.1);border-radius:14px;padding:20px">
+          <div style="font-size:13px;font-weight:600;color:rgba(242,237,224,0.9);margin-bottom:12px">Pythagoras Arrows</div>
+          <div style="display:flex;gap:8px;margin-bottom:4px">
+            <span style="color:#6fae7c;font-size:14px">✦</span>
+            <div>
+              <div style="font-size:11.5px;font-weight:600;color:#8dc498">Arrow of the Intellect</div>
+              <div style="font-size:11px;color:rgba(242,237,224,0.45)">Sharp analytical mind, strong planning</div>
+            </div>
+          </div>
+        </div>
+
+        <div style="background:rgba(255,248,235,0.03);border:1px solid rgba(255,248,235,0.1);border-radius:14px;padding:20px">
+          <div style="font-size:13px;font-weight:600;color:rgba(242,237,224,0.9);margin-bottom:12px">Favorable Days &amp; Colors</div>
+          <div style="margin-bottom:10px;padding:10px 12px;background:rgba(201,162,75,0.07);border-radius:8px">
+            <div style="font-size:11.5px;font-weight:600;color:#e0b877;margin-bottom:4px">Driver 7 (Ketu) — midweek, solitude</div>
+            <div style="font-size:10.5px"><span style="color:rgba(242,237,224,0.4)">Use: </span><span style="color:#8dc498">Grey, Brown</span> <span style="color:rgba(242,237,224,0.4)">Avoid: </span><span style="color:#c97b6a">Red</span></div>
+          </div>
+          <div style="padding:10px 12px;background:rgba(95,143,174,0.07);border-radius:8px">
+            <div style="font-size:11.5px;font-weight:600;color:#a9cbe0;margin-bottom:4px">Conductor 4 (Rahu) — Saturday</div>
+            <div style="font-size:10.5px"><span style="color:rgba(242,237,224,0.4)">Use: </span><span style="color:#8dc498">Blue, Black</span> <span style="color:rgba(242,237,224,0.4)">Avoid: </span><span style="color:#c97b6a">White</span></div>
+          </div>
+        </div>
+
+        <div style="background:rgba(255,248,235,0.03);border:1px solid rgba(255,248,235,0.1);border-radius:14px;padding:20px">
+          <div style="font-size:13px;font-weight:600;color:rgba(242,237,224,0.9);margin-bottom:10px">Top Remedies</div>
+          <div style="font-size:11.5px;color:#a9cbe0;margin-bottom:5px">• Wear white on Mondays</div>
+          <div style="font-size:11.5px;color:#a9cbe0;margin-bottom:5px">• Keep a silver object nearby</div>
+          <div style="font-size:11.5px;color:#a9cbe0">• Practice patience in negotiations</div>
+        </div>
+
+        <div style="background:rgba(255,248,235,0.03);border:1px solid rgba(255,248,235,0.1);border-radius:14px;padding:20px">
+          <div style="font-size:13px;font-weight:600;color:rgba(242,237,224,0.9);margin-bottom:4px">Health Profile</div>
+          <div style="font-size:10.5px;color:rgba(242,237,224,0.4);margin-bottom:10px">Age 32 — governed by Driver (Ketu)</div>
+          <div style="font-size:11px;color:#d9a45c;margin-bottom:4px">• Nervous tension</div>
+          <div style="font-size:11px;color:#d9a45c;margin-bottom:10px">• Sleep irregularities</div>
+          <div style="background:rgba(111,174,124,0.08);border-radius:8px;padding:10px 12px">
+            <div style="font-size:10px;font-weight:600;color:#8dc498;margin-bottom:3px">Lifestyle Advice</div>
+            <div style="font-size:10.5px;color:rgba(242,237,224,0.6);line-height:1.5">Morning walks, consistent sleep, less screen time before bed.</div>
+          </div>
+        </div>
+
+        <div style="background:rgba(255,248,235,0.03);border:1px solid rgba(255,248,235,0.1);border-radius:14px;padding:20px;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center">
+          <div style="font-size:13px;font-weight:600;color:#e0b877;margin-bottom:12px">AI Insights</div>
+          <div style="padding:10px 20px;border-radius:8px;background:#c9a24b;color:#1a1408;font-size:13px;font-weight:600">Generate AI Insights</div>
+        </div>
+
+      </div>
+    </sc-if>
+
+    <sc-if value="{{ isP2 }}" hint-placeholder-val="{{ false }}">
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:16px;margin-bottom:56px">
+
+        <div style="background:rgba(95,143,174,0.06);border:1.5px solid rgba(95,143,174,0.3);border-radius:14px;padding:20px">
+          <div style="font-size:11px;color:rgba(242,237,224,0.5);margin-bottom:12px;text-align:center;letter-spacing:0.04em">ROHAN</div>
+          <div style="display:flex;gap:12px;margin-bottom:14px">
+            <div style="flex:1;text-align:center">
+              <div style="font-size:10px;color:rgba(242,237,224,0.4);margin-bottom:6px">DRIVER</div>
+              <div style="width:56px;height:56px;margin:0 auto 6px;border-radius:10px;background:#5f8fae;display:flex;align-items:center;justify-content:center;font-family:'Newsreader',serif;font-weight:700;font-size:24px;color:#0d1620">1</div>
+              <div style="font-size:11px;font-weight:600;color:#a9cbe0">Surya</div>
+            </div>
+            <div style="display:flex;align-items:center;color:rgba(242,237,224,0.2);font-size:18px">+</div>
+            <div style="flex:1;text-align:center">
+              <div style="font-size:10px;color:rgba(242,237,224,0.4);margin-bottom:6px">CONDUCTOR</div>
+              <div style="width:56px;height:56px;margin:0 auto 6px;border-radius:10px;background:rgba(95,143,174,0.25);border:1.5px solid rgba(95,143,174,0.6);display:flex;align-items:center;justify-content:center;font-family:'Newsreader',serif;font-weight:700;font-size:24px;color:#a9cbe0">9</div>
+              <div style="font-size:11px;font-weight:600;color:#a9cbe0">Mangal</div>
+            </div>
+          </div>
+          <div style="background:rgba(255,248,235,0.04);border-radius:10px;padding:12px">
+            <div style="display:flex;justify-content:space-between;margin-bottom:6px"><span style="font-size:11px;color:rgba(242,237,224,0.5)">Combination Strength</span><span style="font-size:13px;font-weight:600;color:#d9a45c">3/5</span></div>
+            <div style="font-size:12px;font-weight:600;color:rgba(242,237,224,0.9);margin-bottom:4px">Bold initiation, idealistic vision</div>
+            <div style="font-size:10.5px;color:rgba(242,237,224,0.45)">Best for: Entrepreneurship, Public Service, Design</div>
+          </div>
+        </div>
+
+        <div style="background:rgba(255,248,235,0.03);border:1px solid rgba(255,248,235,0.1);border-radius:14px;padding:20px">
+          <div style="font-size:13px;font-weight:600;color:rgba(242,237,224,0.9);margin-bottom:12px">Pythagoras Arrows</div>
+          <div style="display:flex;gap:8px;margin-bottom:4px">
+            <span style="color:#6fae7c;font-size:14px">✦</span>
+            <div>
+              <div style="font-size:11.5px;font-weight:600;color:#8dc498">Arrow of Heaven</div>
+              <div style="font-size:11px;color:rgba(242,237,224,0.45)">Spiritual vision, abstract thinking</div>
+            </div>
+          </div>
+        </div>
+
+        <div style="background:rgba(255,248,235,0.03);border:1px solid rgba(255,248,235,0.1);border-radius:14px;padding:20px">
+          <div style="font-size:13px;font-weight:600;color:rgba(242,237,224,0.9);margin-bottom:12px">Favorable Days &amp; Colors</div>
+          <div style="margin-bottom:10px;padding:10px 12px;background:rgba(95,143,174,0.07);border-radius:8px">
+            <div style="font-size:11.5px;font-weight:600;color:#a9cbe0;margin-bottom:4px">Driver 1 (Surya) — Sunday</div>
+            <div style="font-size:10.5px"><span style="color:rgba(242,237,224,0.4)">Use: </span><span style="color:#8dc498">Orange, Gold</span> <span style="color:rgba(242,237,224,0.4)">Avoid: </span><span style="color:#c97b6a">Blue</span></div>
+          </div>
+          <div style="padding:10px 12px;background:rgba(201,123,106,0.07);border-radius:8px">
+            <div style="font-size:11.5px;font-weight:600;color:#d99a8c;margin-bottom:4px">Conductor 9 (Mangal) — Tuesday</div>
+            <div style="font-size:10.5px"><span style="color:rgba(242,237,224,0.4)">Use: </span><span style="color:#8dc498">Red</span> <span style="color:rgba(242,237,224,0.4)">Avoid: </span><span style="color:#c97b6a">Green</span></div>
+          </div>
+        </div>
+
+        <div style="background:rgba(255,248,235,0.03);border:1px solid rgba(255,248,235,0.1);border-radius:14px;padding:20px">
+          <div style="font-size:13px;font-weight:600;color:rgba(242,237,224,0.9);margin-bottom:10px">Top Remedies</div>
+          <div style="font-size:11.5px;color:#a9cbe0;margin-bottom:5px">• Chant Guru mantra on Thursdays</div>
+          <div style="font-size:11.5px;color:#a9cbe0;margin-bottom:5px">• Journal creative ideas weekly</div>
+          <div style="font-size:11.5px;color:#a9cbe0">• Wear yellow accents</div>
+        </div>
+
+        <div style="background:rgba(255,248,235,0.03);border:1px solid rgba(255,248,235,0.1);border-radius:14px;padding:20px">
+          <div style="font-size:13px;font-weight:600;color:rgba(242,237,224,0.9);margin-bottom:4px">Health Profile</div>
+          <div style="font-size:10.5px;color:rgba(242,237,224,0.4);margin-bottom:10px">Age 34 — governed by Driver (Surya)</div>
+          <div style="font-size:11px;color:#d9a45c;margin-bottom:4px">• Heart strain</div>
+          <div style="font-size:11px;color:#d9a45c;margin-bottom:10px">• Eye fatigue</div>
+          <div style="background:rgba(111,174,124,0.08);border-radius:8px;padding:10px 12px">
+            <div style="font-size:10px;font-weight:600;color:#8dc498;margin-bottom:3px">Lifestyle Advice</div>
+            <div style="font-size:10.5px;color:rgba(242,237,224,0.6);line-height:1.5">Regular cardio, hydration, scheduled downtime to avoid burnout.</div>
+          </div>
+        </div>
+
+        <div style="background:rgba(255,248,235,0.03);border:1px solid rgba(255,248,235,0.1);border-radius:14px;padding:20px;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center">
+          <div style="font-size:13px;font-weight:600;color:#a9cbe0;margin-bottom:12px">AI Insights</div>
+          <div style="padding:10px 20px;border-radius:8px;background:#5f8fae;color:#0d1620;font-size:13px;font-weight:600">Generate AI Insights</div>
+        </div>
+
+      </div>
+    </sc-if>
+
+    <div style="text-align:center;font-size:10px;color:rgba(242,237,224,0.2);margin-top:8px">For entertainment · Classical Feng Shui, Lo Shu &amp; Xuan Kong Fei Xing</div>
+
+  </div>
+
+  <!-- SHARED CHAT -->
+  <div style="position:fixed;bottom:24px;right:24px;z-index:50">
+    <sc-if value="{{ chatOpen }}" hint-placeholder-val="{{ false }}">
+      <div style="width:340px;background:rgba(20,17,13,0.92);backdrop-filter:blur(12px);border:1px solid rgba(255,248,235,0.1);border-radius:14px;overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,0.5);display:flex;flex-direction:column">
+        <div style="padding:14px 16px;border-bottom:1px solid rgba(255,248,235,0.08);display:flex;justify-content:space-between;align-items:flex-start;background:rgba(0,0,0,0.2)">
+          <div>
+            <div style="font-size:13px;font-weight:600;color:#e0b877">Ask About Your Chart</div>
+            <div style="font-size:11px;color:rgba(242,237,224,0.4);margin-top:4px">One thread for Meera &amp; Rohan's combined reading</div>
+          </div>
+          <div onClick="{{ toggleChat }}" style="color:rgba(242,237,224,0.4);cursor:pointer;padding:4px">✕</div>
+        </div>
+        <div style="min-height:140px;padding:14px 16px;font-size:11px;color:rgba(242,237,224,0.2);text-align:center;font-style:italic">No questions yet.</div>
+        <div style="padding:12px 14px;border-top:1px solid rgba(255,248,235,0.08);display:flex;gap:8px;background:rgba(0,0,0,0.15)">
+          <input placeholder="Ask a follow-up question…" style="flex:1;background:rgba(255,248,235,0.05);border:1.5px solid rgba(255,248,235,0.1);border-radius:8px;color:#f2ede0;padding:10px 12px;font-size:13px;font-family:Inter,sans-serif" />
+          <div style="width:40px;height:40px;border-radius:8px;background:#c9a24b;color:#1a1408;display:flex;align-items:center;justify-content:center;font-weight:700;cursor:pointer">→</div>
+        </div>
+      </div>
+    </sc-if>
+    <sc-if value="{{ !chatOpen }}" hint-placeholder-val="{{ true }}">
+      <div onClick="{{ toggleChat }}" style="width:52px;height:52px;border-radius:50%;background:#c9a24b;box-shadow:0 4px 20px rgba(201,162,75,0.35);display:flex;align-items:center;justify-content:center;cursor:pointer;color:#1a1408;font-size:20px">✦</div>
+    </sc-if>
+  </div>
+
+</div>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+  state = { tab: 'p1', chatOpen: false };
+
+  renderVals() {
+    const isP1 = this.state.tab === 'p1';
+    const base = {
+      flex: 1, textAlign: 'center', padding: '9px 20px', borderRadius: '7px',
+      fontSize: '13px', fontWeight: 600, cursor: 'pointer', transition: 'all 0.2s'
+    };
+    const p1TabStyle = { ...base,
+      background: isP1 ? 'rgba(201,162,75,0.18)' : 'transparent',
+      border: isP1 ? '1px solid rgba(201,162,75,0.5)' : '1px solid transparent',
+      color: isP1 ? '#e0b877' : 'rgba(242,237,224,0.4)'
+    };
+    const p2TabStyle = { ...base,
+      background: !isP1 ? 'rgba(95,143,174,0.2)' : 'transparent',
+      border: !isP1 ? '1px solid rgba(95,143,174,0.5)' : '1px solid transparent',
+      color: !isP1 ? '#a9cbe0' : 'rgba(242,237,224,0.4)'
+    };
+    return {
+      isP1,
+      isP2: !isP1,
+      p1TabStyle,
+      p2TabStyle,
+      setTabP1: () => this.setState({ tab: 'p1' }),
+      setTabP2: () => this.setState({ tab: 'p2' }),
+      chatOpen: this.state.chatOpen,
+      toggleChat: () => this.setState(s => ({ chatOpen: !s.chatOpen })),
+    };
+  }
+}
+
+</script>
+</body>
+</html>

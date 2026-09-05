@@ -7,10 +7,10 @@ interface BadgeProps extends HTMLAttributes<HTMLDivElement> {
 
 export function Badge({ className, variant = 'info', children, ...props }: BadgeProps) {
   const variants = {
-    success: 'bg-leaf-400/20 text-leaf-400 border-leaf-400/30',
-    warning: 'bg-solar-500/20 text-solar-400 border-solar-500/30',
-    danger: 'bg-red-500/20 text-red-400 border-red-500/30',
-    info: 'bg-mystic-purple-500/20 text-mystic-purple-400 border-mystic-purple-500/30',
+    success: 'bg-success/20 text-success border-success/30',
+    warning: 'bg-warning/20 text-warning border-warning/30',
+    danger: 'bg-danger/20 text-danger border-danger/30',
+    info: 'bg-[var(--color-person-b)]/20 text-[var(--color-person-b)] border-[var(--color-person-b)]/30',
   };
 
   return (

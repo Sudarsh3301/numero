@@ -87,8 +87,8 @@ export const DriverConductorCard = memo(function DriverConductorCard({
 
       {/* Master Number if present */}
       {m.masterNumber.isMaster && (
-        <div className="mt-2.5 p-2.5 bg-mystic-purple-500/15 border-[1.5px] border-mystic-purple-400/30 rounded-lg">
-          <div className="text-[11px] text-mystic-purple-400 font-bold mb-0.5">
+        <div className="mt-2.5 p-2.5 bg-[var(--color-person-a)]/15 border-[1.5px] border-[var(--color-person-a)]/30 rounded-lg">
+          <div className="text-[11px] text-[var(--color-person-a)] font-bold mb-0.5">
             ✨ Master Number {m.masterNumber.number} ({m.masterNumber.strength}% strength)
           </div>
           <div className="text-[9px] text-white/50">

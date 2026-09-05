@@ -2,70 +2,44 @@
 @tailwind components;
 @tailwind utilities;
 
-@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700;900&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,300..700;1,6..72,300..700&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap');
 
 @layer base {
   :root {
-    /* Solarpunk color palette as CSS variables */
-    --color-cosmic-void: #0a0a0f;
-    --color-deep-space: #0f0720;
-    --color-nebula-dark: #1a0a3d;
-    --color-starfield: #0a1628;
+    /* surfaces */
+    --color-void: #0b0a08;
+    --color-surface: rgba(255,248,235,0.03);
+    --color-surface-hover: rgba(255,248,235,0.06);
+    --color-border: rgba(255,248,235,0.1);
 
-    /* Solar warm gold */
-    --color-solar-400: #fbbf24;
-    --color-solar-500: #f59e0b;
-    --color-solar-600: #d97706;
+    /* person accents */
+    --color-person-a: #c9a24b;
+    --color-person-b: #5f8fae;
 
-    /* Leaf green */
-    --color-leaf-400: #34d399;
-    --color-leaf-500: #10b981;
-    --color-leaf-600: #059669;
+    /* semantic */
+    --color-success: #6fae7c;
+    --color-warning: #d9a45c;
+    --color-danger: #c97b6a;
+    --color-info: #5f8fae;
 
-    /* Earth tones */
-    --color-terra-500: #bfa094;
-    --color-terra-600: #a18072;
+    /* text */
+    --color-text: #f2ede0;
 
-    /* Mystic purple */
-    --color-mystic-400: #c084fc;
-    --color-mystic-500: #a855f7;
-    --color-mystic-600: #9333ea;
-    --color-mystic-700: #7e22ce;
-
-    /* Gradients */
-    --gradient-cosmic: linear-gradient(135deg, #0f0720 0%, #1a0a3d 50%, #0a1628 100%);
-    --gradient-solar: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
-    --gradient-leaf: linear-gradient(135deg, #34d399 0%, #059669 100%);
-    --gradient-mystic: linear-gradient(135deg, #a855f7 0%, #7e22ce 100%);
+    --gradient-void: linear-gradient(160deg, #100d09 0%, #181310 55%, #0b0a08 100%);
   }
 
   body {
-    @apply bg-gradient-cosmic text-white font-body antialiased;
+    @apply bg-gradient-void text-white font-body antialiased;
   }
 
   h1, h2, h3 {
-    @apply font-retro tracking-wide;
+    @apply font-display tracking-wide;
   }
 }
 
 @layer components {
   .card-organic {
-    @apply bg-white/5 backdrop-blur-sm border border-white/10 rounded-organic shadow-lg;
-  }
-
-  .card-organic-solar {
-    @apply bg-gradient-to-br from-solar-500/10 to-transparent border border-solar-500/30 rounded-organic;
-  }
-
-  .pattern-organic {
-    background-image:
-      radial-gradient(circle at 20% 50%, rgba(245, 158, 11, 0.05) 0%, transparent 50%),
-      radial-gradient(circle at 80% 80%, rgba(52, 211, 153, 0.05) 0%, transparent 50%);
-  }
-
-  .text-glow-solar {
-    @apply text-solar-400;
-    text-shadow: 0 0 10px rgba(245, 158, 11, 0.5);
+    @apply bg-white/5 backdrop-blur-sm border border-white/10 rounded-card shadow-lg;
   }
 }
 
@@ -79,6 +53,22 @@
   }
 
   .scrollbar-organic::-webkit-scrollbar-thumb {
-    @apply bg-solar-500/50 rounded-full hover:bg-solar-500/70;
+    @apply bg-white/20 rounded-full hover:bg-white/30;
+  }
+
+  .om-skel {
+    background: linear-gradient(90deg, rgba(255,248,235,0.05) 25%, rgba(255,248,235,0.1) 37%, rgba(255,248,235,0.05) 63%);
+    background-size: 400px 100%;
+    animation: shimmer 1.4s ease infinite;
+  }
+
+  @keyframes shimmer {
+    0% { background-position: -200px 0; }
+    100% { background-position: 200px 0; }
+  }
+
+  @keyframes cellIn {
+    from { opacity: 0; transform: translateY(6px) scale(0.9); }
+    to { opacity: 1; transform: translateY(0) scale(1); }
   }
 }

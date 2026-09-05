@@ -17,6 +17,10 @@ import type { DCCombination, HealthProfile, Remedy } from "@/lib/numerology/type
 import { PersonForm } from '@/components/forms/PersonForm';
 import { NumerologyDashboard } from '@/components/numerology/NumerologyDashboard';
 import { PartnershipScoreCard } from '@/components/numerology/PartnershipScoreCard';
+import CoupleComparison from '@/components/numerology/CoupleComparison';
+import PersonTabs from '@/components/numerology/PersonTabs';
+import DashboardSkeleton from '@/components/numerology/DashboardSkeleton';
+import { PERSON_COLORS } from '@/lib/theme';
 
 type NarrativePayload = {
   narrative: { sections?: any[]; status?: string };
@@ -311,7 +315,12 @@ export default function App() {
     setLoading(false);
 
     // Phase 2 — async Groq narrative, scoped failure; never un-renders the grid
+    await runNarrative(prof1, prof2, mode, lang);
+  };
+
+  const runNarrative = async (prof1: any, prof2: any | null, mode: string, lang: string) => {
     setNarrativeLoading(true);
+    setNarrativeError(null);
     try {
       const analysis=await fetchNarrative(prof1,prof2,null,mode,lang);
       setResult(prev=>prev?({...prev,narrative:analysis.narrative,signals:analysis.signals,archetypes:analysis.archetypes}):prev);
@@ -323,9 +332,14 @@ export default function App() {
     }
   };
 
+  const regenerateNarrative = () => {
+    if (!R) return;
+    runNarrative(R.prof1, R.prof2, R.mode, R.lang);
+  };
+
   const R=result;
-  const k1c="var(--color-mystic-500)";  // #a855f7 - Solarpunk mystic purple
-  const k2c="var(--color-solar-500)";   // #f59e0b - Solarpunk solar gold
+  const k1c = PERSON_COLORS.p1;
+  const k2c = PERSON_COLORS.p2;
 
   // Memoized — only recomputes when result changes, not on chat keystrokes
   const chartCtx=useMemo(()=>R?{
@@ -335,13 +349,13 @@ export default function App() {
   }:null,[R]);
 
   return (
-    <div style={{minHeight:"100vh",background:"var(--gradient-cosmic)",
+    <div style={{minHeight:"100vh",background:"var(--gradient-void)",
       fontFamily:"'Segoe UI',sans-serif",padding:"20px 16px",color:"#fff"}}>
 
       <div style={{textAlign:"center",marginBottom:18}}>
         <div style={{fontSize:30,marginBottom:3}}>☯</div>
         <h1 style={{margin:0,fontSize:20,fontWeight:900,
-          background:"linear-gradient(90deg,var(--color-mystic-400),var(--color-leaf-400),var(--color-solar-500))",
+          background:"linear-gradient(90deg,var(--color-person-a),var(--color-person-b))",
           WebkitBackgroundClip:"text",WebkitTextFillColor:"transparent"}}>
           Pure Math Based Numerology
         </h1>
@@ -355,9 +369,9 @@ export default function App() {
           {["single","couple"].map(m=>(
             <button key={m} onClick={()=>{setMode(m);setResult(null);}} style={{
               flex:1,padding:"7px 0",borderRadius:8,border:"none",cursor:"pointer",fontSize:12,fontWeight:"bold",
-              background:mode===m?"linear-gradient(135deg,var(--color-mystic-500),var(--color-mystic-600))":"transparent",
-              color:mode===m?"#fff":"rgba(255,255,255,0.35)",
-              boxShadow:mode===m?"0 0 10px rgba(168,85,247,0.4)":"none",transition:"all 0.2s"
+              background:mode===m?"var(--color-person-a)":"transparent",
+              color:mode===m?"#1a1408":"rgba(255,255,255,0.35)",
+              boxShadow:mode===m?"0 0 10px rgba(201,162,75,0.4)":"none",transition:"all 0.2s"
             }}>{m==="single"?"👤 Individual":"💑 Couple"}</button>
           ))}
         </div>
@@ -365,9 +379,9 @@ export default function App() {
           {[{v:"en",l:"EN"},{v:"hi",l:"हिं"}].map(({v,l})=>(
             <button key={v} onClick={()=>setLang(v)} style={{
               flex:1,padding:"7px 0",borderRadius:8,border:"none",cursor:"pointer",fontSize:13,fontWeight:"bold",
-              background:lang===v?"linear-gradient(135deg,var(--color-leaf-500),var(--color-leaf-600))":"transparent",
+              background:lang===v?"var(--color-person-b)":"transparent",
               color:lang===v?"#fff":"rgba(255,255,255,0.35)",
-              boxShadow:lang===v?"0 0 10px rgba(52,211,153,0.4)":"none",transition:"all 0.2s"
+              boxShadow:lang===v?"0 0 10px rgba(95,143,174,0.4)":"none",transition:"all 0.2s"
             }}>{l}</button>
           ))}
         </div>
@@ -382,14 +396,16 @@ export default function App() {
 
       <button onClick={calculate} disabled={loading} style={{
         width:"100%",padding:"12px 0",borderRadius:12,border:"none",cursor:loading?"not-allowed":"pointer",
-        background:loading?"rgba(168,85,247,0.4)":"linear-gradient(135deg,var(--color-mystic-500),var(--color-solar-500))",
+        background:loading?"rgba(201,162,75,0.4)":"linear-gradient(135deg,var(--color-person-a),var(--color-person-b))",
         color:"#fff",fontSize:14,fontWeight:"bold",
-        boxShadow:loading?"none":"0 4px 20px rgba(168,85,247,0.5)",marginBottom:20
+        boxShadow:loading?"none":"0 4px 20px rgba(201,162,75,0.4)",marginBottom:20
       }}>{loading?"✨ Consulting the stars…":"✨ Reveal My Numbers"}</button>
+
+      {loading && !R && <DashboardSkeleton />}
 
       {R&&(
         <div style={{ display: "flex", flexDirection: "column", gap: 32, width: "100%", alignItems: "center" }}>
-          
+
           {mode === "couple" && R.m2 && (
             <PartnershipScoreCard m1={R.m1} m2={R.m2} />
           )}
@@ -399,23 +415,34 @@ export default function App() {
             label={R.m1.name || "Person 1"}
             color={k1c}
             narrative={mode === "single" ? R.narrative : null}
-            chatProps={mode === "single" && R.archetypes ? { chartContext: chartCtx, lang, fetchFollowUp } : undefined}
+            chatProps={R.archetypes ? { chartContext: chartCtx, lang, fetchFollowUp } : undefined}
             isSingle={mode === "single"}
             narrativeLoading={narrativeLoading}
             narrativeError={narrativeError ?? undefined}
+            onRetryNarrative={regenerateNarrative}
           />
 
           {R.m2 && (
-            <NumerologyDashboard
-              profile={R.m2}
-              label={R.m2.name || "Person 2"}
-              color={k2c}
-              narrative={mode === "couple" ? R.narrative : null}
-              chatProps={mode === "couple" && R.archetypes ? { chartContext: chartCtx, lang, fetchFollowUp } : undefined}
-              isSingle={false}
-              narrativeLoading={narrativeLoading}
-              narrativeError={narrativeError ?? undefined}
-            />
+            <>
+              <CoupleComparison
+                m1={R.m1}
+                m2={R.m2}
+                label1={R.m1.name || "Person 1"}
+                label2={R.m2.name || "Person 2"}
+              />
+              <PersonTabs
+                m1={R.m1}
+                m2={R.m2}
+                label1={R.m1.name || "Person 1"}
+                label2={R.m2.name || "Person 2"}
+                lang={lang}
+                narrative1={R.narrative}
+                narrative2={null}
+                narrativeLoading={narrativeLoading}
+                narrativeError={narrativeError ?? undefined}
+                onRetryNarrative={regenerateNarrative}
+              />
+            </>
           )}
 
           <div style={{textAlign:"center",fontSize:10,color:"rgba(255,255,255,0.18)",marginTop:24}}>

@@ -45,7 +45,7 @@ export const PersonalYearCard = memo(function PersonalYearCard({
               {pyEffect.name}
             </div>
             {pyEffect.isBlessingYear && (
-              <div className="text-[9px] text-leaf-400 mt-0.5">✨ Blessing Year</div>
+              <div className="text-[9px] text-success mt-0.5">✨ Blessing Year</div>
             )}
           </div>
         </div>

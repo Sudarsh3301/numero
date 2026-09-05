@@ -8,6 +8,7 @@ interface LoShuGridProps {
   counts: Record<number, number>;
   color?: string;
   variant?: 'solar' | 'mystic' | 'leaf';
+  cellSize?: number;
   onCellHover?: (num: number | null) => void;
   onCellClick?: (num: number) => void;
 }
@@ -16,13 +17,14 @@ export const LoShuGrid = memo(function LoShuGrid({
   counts,
   color = "#a855f7",
   variant = 'mystic',
+  cellSize = 90,
   onCellHover,
   onCellClick
 }: LoShuGridProps) {
   const variantClasses = {
-    solar: 'shadow-glow-solar',
-    mystic: 'shadow-glow-mystic',
-    leaf: 'shadow-glow-leaf',
+    solar: 'shadow-lg',
+    mystic: 'shadow-lg',
+    leaf: 'shadow-lg',
   };
 
   return (
@@ -30,7 +32,7 @@ export const LoShuGrid = memo(function LoShuGrid({
       className="grid grid-cols-3 gap-2 w-fit mx-auto animate-float"
       onMouseLeave={() => onCellHover?.(null)}
     >
-      {flatten2D(GRID_POS).map(n => {
+      {flatten2D(GRID_POS).map((n, idx) => {
         const c = counts[n] || 0;
         const isMissing = c === 0;
         const isPresent = c === 1;
@@ -42,7 +44,7 @@ export const LoShuGrid = memo(function LoShuGrid({
             onMouseEnter={() => onCellHover?.(n)}
             onClick={() => onCellClick?.(n)}
             className={cn(
-              'w-[90px] h-[90px] md:w-[110px] md:h-[110px] rounded-xl cursor-pointer relative',
+              'rounded-xl cursor-pointer relative',
               'flex flex-col items-center justify-center',
               'transition-all duration-300',
               'hover:scale-105',
@@ -65,11 +67,17 @@ export const LoShuGrid = memo(function LoShuGrid({
                 variantClasses[variant]
               ]
             )}
-            style={!isMissing ? {
-              background: `${color}${Math.min(15 + c * 20, 60).toString(16).padStart(2, "0")}`,
-              borderColor: isStrong ? `${color}` : `${color}88`,
-              boxShadow: isStrong ? `0 0 20px ${color}66, inset 0 0 12px ${color}33` : `0 0 10px ${color}22`,
-            } : undefined}
+            style={{
+              width: cellSize,
+              height: cellSize,
+              minWidth: cellSize,
+              animation: `cellIn 0.4s ease ${idx * 0.04}s both`,
+              ...(!isMissing ? {
+                background: `${color}${Math.min(15 + c * 20, 60).toString(16).padStart(2, "0")}`,
+                borderColor: isStrong ? `${color}` : `${color}88`,
+                boxShadow: isStrong ? `0 0 20px ${color}66, inset 0 0 12px ${color}33` : `0 0 10px ${color}22`,
+              } : {}),
+            }}
           >
             <div className="absolute top-1.5 left-2.5 text-[10px] md:text-[12px] text-white/40 font-mono tracking-widest">{n}</div>
             <div className={cn(

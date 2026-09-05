@@ -90,15 +90,15 @@ export const PartnershipScoreCard = memo(function PartnershipScoreCard({
       <div className="bg-gradient-to-br from-black/40 to-black/20 rounded-3xl p-6 md:p-8 border border-white/10 flex flex-col md:flex-row gap-8 items-center md:items-start relative overflow-hidden backdrop-blur-md">
         
         {/* SCORE GAUGE */}
-        <div className="flex flex-col items-center justify-center shrink-0 w-48 h-48 rounded-full border-[6px] border-white/5 relative">
-          <div className="absolute inset-0 rounded-full border-t-[6px] border-l-[6px] opacity-70"
-            style={{ 
+        <div className="flex flex-col items-center justify-center shrink-0 w-28 h-28 md:w-48 md:h-48 rounded-full border-4 md:border-[6px] border-white/5 relative">
+          <div className="absolute inset-0 rounded-full border-t-4 border-l-4 md:border-t-[6px] md:border-l-[6px] opacity-70"
+            style={{
               borderColor: comp.score >= 70 ? '#34d399' : comp.score >= 50 ? '#fbbf24' : '#f87171',
-              transform: `rotate(${comp.score * 3.6 - 135}deg)`, transition: 'transform 1s ease-out' 
-            }} 
+              transform: `rotate(${comp.score * 3.6 - 135}deg)`, transition: 'transform 1s ease-out'
+            }}
           />
-          <div className={`text-5xl font-black ${scoreColor} drop-shadow-lg`}>{comp.score}%</div>
-          <div className="text-sm font-bold text-white/60 tracking-wider mt-1 uppercase">{scoreText}</div>
+          <div className={`text-3xl md:text-5xl font-black ${scoreColor} drop-shadow-lg`}>{comp.score}%</div>
+          <div className="text-xs md:text-sm font-bold text-white/60 tracking-wider mt-1 uppercase">{scoreText}</div>
         </div>
 
         {/* COMPARISON DETAILS */}

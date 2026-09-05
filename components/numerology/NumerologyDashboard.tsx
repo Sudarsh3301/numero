@@ -26,6 +26,7 @@ interface NumerologyDashboardProps {
   };
   narrativeLoading?: boolean;
   narrativeError?: string;
+  onRetryNarrative?: () => void;
 }
 
 export const NumerologyDashboard = memo(function NumerologyDashboard({
@@ -37,6 +38,7 @@ export const NumerologyDashboard = memo(function NumerologyDashboard({
   chatProps,
   narrativeLoading,
   narrativeError,
+  onRetryNarrative,
 }: NumerologyDashboardProps) {
   const { selectedNumber, setSelectedNumber } = useNumerologyStore();
   const [lockedNumber, setLockedNumber] = useState<number | null>(null);
@@ -125,7 +127,7 @@ export const NumerologyDashboard = memo(function NumerologyDashboard({
           <NarrativeCard
             sections={narrative?.sections ?? []}
             isGenerating={narrativeLoading ?? false}
-            onGenerate={() => console.log('Generate AI Insights clicked')}
+            onGenerate={onRetryNarrative}
             errorMessage={narrativeError ?? undefined}
           />
         )}

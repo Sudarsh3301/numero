@@ -17,8 +17,8 @@ export const ComplementaryCard = memo(function ComplementaryCard({
 
   if (missing.length === 0) {
     return (
-      <div className="bg-leaf-400/10 rounded-organic p-4 text-center border border-leaf-400/30">
-        <div className="text-[14px] text-leaf-400 font-bold">
+      <div className="bg-success/10 rounded-organic p-4 text-center border border-success/30">
+        <div className="text-[14px] text-success font-bold">
           ✨ No Missing Numbers · {label}
         </div>
         <div className="text-[12px] text-white/50 mt-1">
@@ -128,7 +128,7 @@ export const ComplementaryCard = memo(function ComplementaryCard({
       </div>
 
       {present.includes(5) && (
-        <div className="mt-6 p-4 bg-mystic-purple-500/10 rounded-xl text-[12px] md:text-[13px] font-medium text-mystic-purple-300 border border-mystic-purple-500/20 text-center max-w-2xl mx-auto">
+        <div className="mt-6 p-4 bg-[var(--color-person-a)]/10 rounded-xl text-[12px] md:text-[13px] font-medium text-[var(--color-person-a)] border border-[var(--color-person-a)]/20 text-center max-w-2xl mx-auto">
           ✨ <strong className="text-white/90">Number 5 present:</strong> Universal support for all numbers - guides towards will, success & prosperity
         </div>
       )}

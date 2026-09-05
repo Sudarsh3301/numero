@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<style>
+  @font-face { font-family: 'system'; src: local('system-ui'); }
+  body { margin: 0; }
+  code { background: #f1f0ee; padding: 1px 5px; border-radius: 3px; font-size: 0.9em; }
+  ::selection { background: #d8d4ff; }
+</style>
+</helmet>
+<div style="max-width:880px;margin:0 auto;padding:56px 32px 120px;font-family:Georgia,'Times New Roman',serif;color:#1a1a1a;background:#fff;line-height:1.55">
+
+  <div style="font-family:'Segoe UI',Helvetica,Arial,sans-serif;font-size:12px;letter-spacing:0.08em;text-transform:uppercase;color:#8a8578;margin-bottom:8px">Design System Audit · Read-only findings</div>
+  <h1 style="font-family:'Segoe UI',Helvetica,Arial,sans-serif;font-size:34px;font-weight:700;margin:0 0 6px;color:#111">Numero — Design System Audit</h1>
+  <div style="font-family:'Segoe UI',Helvetica,Arial,sans-serif;font-size:14px;color:#6b6658;margin-bottom:40px">No redesign proposed. This documents what exists today, with file references, so decisions can be made deliberately.</div>
+
+  <div style="background:#faf9f6;border:1px solid #e8e4da;border-radius:10px;padding:20px 24px;margin-bottom:44px;font-family:'Segoe UI',Helvetica,Arial,sans-serif;font-size:14px;color:#3a3630">
+    <b>Headline finding:</b> there are three parallel design systems in this codebase, and the one actually rendered to users (<code>loshu.tsx</code> + <code>components/numerology/*</code>) uses none of the other two consistently. A documented spec (<code>DESIGN.md</code>) and a Tailwind token layer (<code>tailwind.config.js</code> + <code>globals.css</code>) both exist, but most components bypass both and hardcode raw hex values and pixel numbers inline.
+  </div>
+
+  <h2 style="font-family:'Segoe UI',Helvetica,Arial,sans-serif;font-size:20px;margin:0 0 6px;color:#111">0. What's actually running</h2>
+  <p><code>app/page.tsx</code> renders <code>loshu.tsx</code>'s default export directly — that 429-line file is the entire app shell (mode/language toggles, both person forms, calculate button, results). It imports and composes components from <code>components/numerology/*</code> and <code>components/forms/PersonForm.tsx</code>.</p>
+  <p>Separately, <code>components/ui/</code> (Card, Button, Badge, Input) is a small Tailwind-variant component kit — but it's used in exactly <b>one</b> place in the whole app: <code>DriverConductorCard.tsx</code> imports <code>Card</code> but never renders it (dead import — the component builds its own <code>&lt;div&gt;</code> instead). <code>PersonForm.tsx</code> imports <code>Input</code> and <code>Button</code> but also never uses them — it hand-rolls its own <code>&lt;input&gt;</code>/<code>&lt;button&gt;</code> with inline styles instead. So the <code>ui/</code> kit is effectively unused dead code today.</p>
+  <p>Third, <code>DESIGN.md</code> at the repo root is a detailed, well-written token spec (colors, type scale, spacing, shadows, component recipes) — but it reads as aspirational documentation, not a build artifact: its "Cosmic Void" gradient (<code>#0f0720 → #1a0a3d → #0a1628</code>) matches <code>globals.css</code>'s <code>--gradient-cosmic</code>, but almost none of its other tokens (e.g. <code>secondary: #f59e0b</code> named "warning," font sizes, the <code>card-padding: 14px</code> unit) are referenced by class name or variable anywhere in the components read.</p>
+
+  <h2 style="font-family:'Segoe UI',Helvetica,Arial,sans-serif;font-size:20px;margin:56px 0 6px;color:#111">1. Colors</h2>
+  <p><b>Not centralized.</b> Three independent color definitions exist and disagree with each other:</p>
+  <ul>
+    <li><code>tailwind.config.js</code> — <code>solar-500: #a855f7</code>(!) is actually purple, mislabeled "solar," while <code>leaf-500: #00f5d4</code> is cyan, not green. <code>terra-500/600</code> are pink (<code>#f472b6</code>/<code>#f15bb5</code>).</li>
+    <li><code>globals.css</code> CSS variables — a <i>different</i> palette: <code>--color-solar-500: #f59e0b</code> (actually gold, as the name implies), <code>--color-leaf-500: #10b981</code> (actually green), <code>--color-terra-500: #bfa094</code> (an earth tone, not pink). These variables are what <code>loshu.tsx</code> actually consumes (<code>var(--color-mystic-500)</code>, etc.).</li>
+    <li><code>DESIGN.md</code> — a third set again (<code>secondary: #f59e0b</code>, <code>tertiary: #10b981</code>), roughly matching <code>globals.css</code> but with different naming (primary/secondary/tertiary vs. solar/leaf/mystic).</li>
+  </ul>
+  <p>So <code>bg-solar-500</code> (Tailwind class, resolves purple) and <code>var(--color-solar-500)</code> (CSS variable, resolves gold) are both live in the codebase and mean opposite colors depending on which system a component happens to reach for.</p>
+  <p><b>On top of that, most components skip both systems and hardcode hex literally in JS.</b> Observed inline hex values, by rough semantic role:</p>
+  <ul>
+    <li>Purple/mystic: <code>#a855f7</code>, <code>#7c3aed</code>, <code>#c084fc</code> — used interchangeably as "the purple" across <code>LoShuGrid.tsx:17</code>, <code>NumerologyDashboard.tsx:35</code>, <code>PersonForm.tsx:56</code>, <code>ChatPanel.tsx:58,125</code>, <code>NarrativeCard.tsx:32</code>, <code>PersonalYearCard.tsx:19</code>. Near-duplicates of the same brand purple, never referencing one token.</li>
+    <li>Green/success: <code>#4ade80</code> (<code>DriverConductorCard.tsx:17</code>, <code>PersonalYearCard.tsx:15</code>) vs. <code>#34d399</code> (<code>PartnershipScoreCard.tsx:96</code>, <code>PlaneBar.tsx:21</code>) — two different greens used for the same "positive/success" meaning, never reconciled.</li>
+    <li>Amber/warning: <code>#f59e0b</code> (<code>PersonalYearCard.tsx:16</code>) vs. <code>#fbbf24</code> (<code>PartnershipScoreCard.tsx:96</code>) — same ambiguity.</li>
+    <li>Red/error: <code>#f87171</code> appears consistently (<code>DriverConductorCard.tsx:19</code>, <code>PartnershipScoreCard.tsx:96</code>, <code>PersonalYearCard.tsx:17</code>) — the one color that's actually stable across files.</li>
+    <li>Blue: <code>#60a5fa</code> (<code>DriverConductorCard.tsx:18</code>, <code>PlaneBar.tsx:19</code>).</li>
+    <li>One-offs with no reuse: <code>#94a3b8</code> and <code>#c084fc</code> (both only in <code>PersonalYearCard.tsx</code>), <code>#f472b6</code> (only in <code>PlaneBar.tsx:20</code>).</li>
+  </ul>
+  <p>Additionally, alpha-suffixed template strings like <code>${color}18</code>, <code>${color}44</code>, <code>${color}55</code>, <code>${color}66</code>, <code>${color}77</code>, <code>${color}88</code> appear directly in <code>DriverConductorCard.tsx</code> and <code>LoShuGrid.tsx</code> — opacity values chosen ad hoc per call site rather than as a defined alpha scale, even though <code>DESIGN.md</code> documents a clean text-alpha scale (90/70/50/40/30/20/10%) that isn't actually followed for anything but body text.</p>
+  <p><b>Recommendation flag (no action taken):</b> pick one naming system, one hex per role, and delete the other two before any visual work — right now "solar" and "leaf" are landmines because their meaning flips between files.</p>
+
+  <h2 style="font-family:'Segoe UI',Helvetica,Arial,sans-serif;font-size:20px;margin:56px 0 6px;color:#111">2. Spacing</h2>
+  <p><code>DESIGN.md</code> documents a real 4px-based scale (4/8/16/24/32/48, plus a <code>card-padding: 14px</code> exception). In practice, components mix Tailwind's default spacing scale with arbitrary bracket values freely. Distinct spacing values actually observed in the components read:</p>
+  <p style="font-family:'SF Mono',Consolas,monospace;font-size:12.5px;color:#4a4638;background:#faf9f6;padding:12px 16px;border-radius:8px">
+  2px&nbsp; · &nbsp;3px&nbsp; · &nbsp;4px (gap-1)&nbsp; · &nbsp;6px (p-1.5)&nbsp; · &nbsp;7px&nbsp; · &nbsp;8px (gap-2 / p-2)&nbsp; · &nbsp;10px (p-2.5)&nbsp; · &nbsp;11px&nbsp; · &nbsp;12px&nbsp; · &nbsp;14px (p-3.5, "card-padding")&nbsp; · &nbsp;16px (p-4 / gap-4)&nbsp; · &nbsp;20px&nbsp; · &nbsp;24px (p-6 / gap-6)&nbsp; · &nbsp;32px (p-8 / gap-8)&nbsp; · &nbsp;40px (mb-10 equivalents in gaps)&nbsp; · &nbsp;48px (gap-12)
+  </p>
+  <p>The dense info cards (<code>PlaneBar</code>, <code>PlanetDayCard</code>, <code>RemediesCard</code>, <code>HealthCard</code>, <code>DriverConductorCard</code>) consistently use Tailwind's <code>p-3.5</code> (14px) as the outer card padding — this one convention actually holds across ~5 files. But nested spacing inside those same cards is inconsistent: mb-1, mb-1.5, mb-2, mb-2.5, mb-3 all appear as "space below a label," with no visible rule for which one applies where (e.g. <code>DriverConductorCard.tsx</code> uses <code>mb-1</code>, <code>mb-1.5</code>, and <code>mb-2.5</code> for what look like the same kind of label-to-content gap in different spots).</p>
+  <p>The app shell in <code>loshu.tsx</code> is 100% inline <code>style={{}}</code> objects with raw px numbers (<code>padding:"20px 16px"</code>, <code>marginBottom:18</code>, <code>gap:8</code>, <code>borderRadius:10</code>) — it doesn't touch Tailwind spacing utilities at all, so the "4/8/16" rhythm documented in <code>DESIGN.md</code> is being applied by eye there, not by scale.</p>
+
+  <h2 style="font-family:'Segoe UI',Helvetica,Arial,sans-serif;font-size:20px;margin:56px 0 6px;color:#111">3. Typography</h2>
+  <p>Google Fonts are loaded twice — once via <code>next/font/google</code> in <code>layout.tsx</code> (Orbitron, Inter, JetBrains Mono, exposed as CSS variables) and again via an <code>@import</code> URL in <code>globals.css:5</code> pulling the same three families from the Google Fonts CDN. Redundant, and the two loading paths could resolve to slightly different weight subsets.</p>
+  <p><code>DESIGN.md</code> defines a clean 10-step type scale (display/headline-lg/md/title-lg/body-lg/md/sm/label-lg/md/sm/mono). None of the components read use these names. Instead, every text size is a raw Tailwind bracket value or inline px number, and the same visual "role" is styled differently depending on which file you're in:</p>
+  <ul>
+    <li><b>Card micro-labels</b> ("DRIVER", "Missing", section eyebrows) appear at <code>9px</code>, <code>10px</code>, and <code>11px</code> across <code>DriverConductorCard.tsx</code>, <code>NumerologyDashboard.tsx</code>, <code>PlaneBar.tsx</code>, and <code>PlanetDayCard.tsx</code> — no single size for this repeated role.</li>
+    <li><b>Card titles</b ("🧩 Plane Balance", "🏥 Health Profile") are consistently <code>text-[12px] font-bold text-white/90</code> across <code>PlaneBar</code>, <code>PlanetDayCard</code>, <code>RemediesCard</code>, <code>HealthCard</code> — this one role is actually consistent.</li>
+    <li><b>Section headings</b> vary widely: <code>NumerologyDashboard.tsx:60</code> uses <code>text-xl font-bold</code> for a person-label heading, <code>PartnershipScoreCard.tsx:102</code> uses <code>text-2xl font-bold</code> for its card title, and the app's own <code>&lt;h1&gt;</code> in <code>loshu.tsx</code> is set inline at <code>fontSize:20,fontWeight:900</code> — three different sizes for what all read as top-level headings in their respective contexts.</li>
+    <li><b>Body/insight text</b> ranges from <code>text-[9px]</code> (health advice, remedies detail) to <code>text-sm</code>/<code>text-base</code> (the dashboard's "inline insight strip") with many intermediate stops (<code>10px</code>, <code>11px</code>, <code>12px</code>, <code>13px</code>) and no evident rule for which content gets which size.</li>
+  </ul>
+  <p>The unused <code>components/ui/</code> kit does reference the documented type roles somewhat (<code>CardTitle</code> uses <code>font-retro text-lg font-bold</code>) — but since that kit isn't rendered anywhere, it doesn't help.</p>
+
+  <h2 style="font-family:'Segoe UI',Helvetica,Arial,sans-serif;font-size:20px;margin:56px 0 6px;color:#111">4. Radii & shadows</h2>
+  <p><b>Radii:</b> <code>rounded-organic</code> (1.25rem/20px, defined once in <code>tailwind.config.js</code>) is the one radius token that's genuinely reused — it appears in <code>PlaneBar</code>, <code>PlanetDayCard</code>, <code>RemediesCard</code>, <code>HealthCard</code>, <code>DriverConductorCard</code>, <code>NarrativeCard</code>, <code>PersonForm</code>. That's a real win. But it coexists with untokenized arbitrary radii on nearby elements in the same files: <code>rounded-xl</code> (12px), <code>rounded-2xl</code>/<code>rounded-3xl</code> (16/24px), and bracket values like <code>rounded-[32px]</code> in <code>ChatPanel.tsx:69</code> and <code>md:rounded-[32px]</code> — a one-off that duplicates the already-defined <code>rounded-bio</code> (2rem/32px) token instead of using it.</p>
+  <p><b>Shadows:</b> <code>tailwind.config.js</code> defines three named glow shadows (<code>glow-solar</code>, <code>glow-leaf</code>, <code>glow-mystic</code>), each hardcoding its own rgba rather than deriving from a color variable, and <code>DESIGN.md</code> separately lists five (<code>glow-primary</code>, <code>glow-secondary</code>, <code>glow-tertiary</code>, <code>glow-mystic</code>, plus <code>card-elevated</code>, <code>chat-bubble</code>, <code>soft-lg</code>) with different rgba values again. In the components actually rendered, glow shadows are almost never referenced by class — they're written inline per component: <code>0 0 20px rgba(139,92,246,0.5)</code> (<code>PersonForm.tsx</code>/<code>ChatPanel.tsx</code>, purple), <code>0 0 10px rgba(168,85,247,0.4)</code> (<code>loshu.tsx</code> mode toggle), <code>0 0 16px ${color}55</code> (<code>DriverConductorCard.tsx</code>, parameterized). Same visual effect ("glowing purple halo"), at least four different literal rgba/alpha combinations.</p>
+
+  <h2 style="font-family:'Segoe UI',Helvetica,Arial,sans-serif;font-size:20px;margin:56px 0 6px;color:#111">5. Grid / layout</h2>
+  <p>There's a genuine, consistently-applied layout idea in <code>NumerologyDashboard.tsx</code>: a <code>45%/55%</code> desktop split (<code>md:grid-cols-[45%_55%]</code>) collapsing to one column on mobile, with numbered comment blocks marking five sections (Hero, Insights, Action, Timeline, Interactive) — this is the closest thing to a documented layout system in the codebase and it's followed within that one file.</p>
+  <p>Outside that file, layout logic is ad hoc per component:</p>
+  <ul>
+    <li><code>PartnershipScoreCard.tsx</code> uses its own <code>flex-col md:flex-row</code> + a separate <code>grid-cols-1 md:grid-cols-2</code> nested grid for its breakdown/synergy panels — a different column convention than the dashboard's <code>45/55</code> split it sits above.</li>
+    <li><code>ComplementaryCard.tsx:50</code> introduces a three-step responsive grid (<code>grid-cols-1 sm:grid-cols-2 lg:grid-cols-3</code>) not used anywhere else — the only place <code>sm:</code>/<code>lg:</code> grid breakpoints appear together in one rule.</li>
+    <li>The app shell (<code>loshu.tsx</code>) uses plain flexbox with inline <code>gap</code> values for its toggle rows and form row, unrelated to any grid system below it.</li>
+  </ul>
+  <p>Section ordering within the dashboard (Hero → Insights → Action → Timeline → floating Chat) is fixed and doesn't vary by mode (single vs. couple) except for the Partnership card being prepended in couple mode — that part is consistent.</p>
+
+  <h2 style="font-family:'Segoe UI',Helvetica,Arial,sans-serif;font-size:20px;margin:56px 0 6px;color:#111">6. Responsive behavior</h2>
+  <p><b>Breakpoints used:</b> only Tailwind's default <code>sm</code> (640px), <code>md</code> (768px), and <code>lg</code> (1024px) — no custom breakpoints defined in <code>tailwind.config.js</code>. Usage is inconsistent in which breakpoint a given component chooses to switch at:</p>
+  <ul>
+    <li><code>LoShuGrid.tsx:45</code> scales cell size at <code>md:</code> (90px → 110px).</li>
+    <li><code>ChatPanel.tsx:69</code> switches its own width at <code>sm:</code> (full-width-minus-margin → fixed 350px) — a different breakpoint than the grid uses for its own size change, even though both are "does this get bigger on a wider screen" decisions.</li>
+    <li><code>ComplementaryCard.tsx:50</code> uses all three (<code>sm</code>, then <code>lg</code>) in a single grid rule, skipping <code>md</code> entirely — a step pattern not seen elsewhere.</li>
+    <li><code>NumerologyDashboard.tsx</code> standardizes on <code>md:</code> for every column/direction change in that one file (grid split, flex-row, order/col-start rules) — internally consistent, but again a different single breakpoint than <code>ChatPanel</code>'s <code>sm:</code>.</li>
+  </ul>
+  <p><b>Likely mobile issues (from reading, not measured in a live viewport):</b></p>
+  <ul>
+    <li><code>ChatPanel.tsx</code> is <code>fixed bottom-6 right-6</code> with <code>z-50</code>, permanently floating over content — on a small phone viewport with the dashboard's own content also using bottom padding via section gaps, there's no reserved safe-area at the bottom, so the last dashboard section (Timeline: PersonalYearCard/HealthCard) can end up partially covered by the open 350px-tall chat panel with no scroll-margin accounting for it.</li>
+    <li><code>PartnershipScoreCard.tsx</code>'s circular score gauge is a fixed <code>w-48 h-48</code> (192px) with no responsive size step at all — on narrow phones this is a large fixed-size circle next to text that does wrap, so the gauge doesn't scale down like <code>LoShuGrid</code>'s cells do.</li>
+    <li><code>DriverConductorCard.tsx</code>'s Driver/Conductor number tiles are fixed <code>w-[60px] h-[60px]</code> with no <code>md:</code> variant, unlike the Lo Shu grid cells right next to them in the same dashboard column, which do get a mobile→desktop size step — an inconsistency in whether "number tile" sizing responds to viewport.</li>
+    <li>The app shell's top toggle row (mode + language pills) in <code>loshu.tsx</code> is a flat <code>display:flex</code> with inline <code>flex:2</code>/<code>flex:1</code> ratios and no breakpoint logic — it will always keep both pill groups side by side, even at very narrow widths, since it's plain inline flex rather than a Tailwind responsive class.</li>
+  </ul>
+
+  <h2 style="font-family:'Segoe UI',Helvetica,Arial,sans-serif;font-size:20px;margin:56px 0 6px;color:#111">Summary table</h2>
+  <table style="width:100%;border-collapse:collapse;font-family:'Segoe UI',Helvetica,Arial,sans-serif;font-size:13px;margin-bottom:8px">
+    <tr style="border-bottom:2px solid #1a1a1a">
+      <th style="text-align:left;padding:8px 10px 8px 0">Area</th>
+      <th style="text-align:left;padding:8px 10px">Centralized?</th>
+      <th style="text-align:left;padding:8px 0">Notes</th>
+    </tr>
+    <tr style="border-bottom:1px solid #e8e4da"><td style="padding:8px 10px 8px 0">Colors</td><td style="padding:8px 10px;color:#b23b3b">No</td><td style="padding:8px 0">3 conflicting palettes (Tailwind config, CSS vars, DESIGN.md); most usage is raw inline hex</td></tr>
+    <tr style="border-bottom:1px solid #e8e4da"><td style="padding:8px 10px 8px 0">Spacing</td><td style="padding:8px 10px;color:#a3792f">Partial</td><td style="padding:8px 0">14px card padding holds; internal gaps (1–3) inconsistent; app shell is all raw inline px</td></tr>
+    <tr style="border-bottom:1px solid #e8e4da"><td style="padding:8px 10px 8px 0">Typography</td><td style="padding:8px 10px;color:#b23b3b">No</td><td style="padding:8px 0">Documented 10-step scale in DESIGN.md unused; same roles sized differently per file</td></tr>
+    <tr style="border-bottom:1px solid #e8e4da"><td style="padding:8px 10px 8px 0">Radii</td><td style="padding:8px 10px;color:#a3792f">Partial</td><td style="padding:8px 0"><code>rounded-organic</code> genuinely reused; several one-off arbitrary radii alongside it</td></tr>
+    <tr style="border-bottom:1px solid #e8e4da"><td style="padding:8px 10px 8px 0">Shadows</td><td style="padding:8px 10px;color:#b23b3b">No</td><td style="padding:8px 0">Named tokens exist twice (Tailwind + DESIGN.md); real usage is inline rgba, 4+ variants for "purple glow" alone</td></tr>
+    <tr style="border-bottom:1px solid #e8e4da"><td style="padding:8px 10px 8px 0">Grid/layout</td><td style="padding:8px 10px;color:#a3792f">Partial</td><td style="padding:8px 0">Dashboard's 45/55 split is a real, followed system; other components layout independently</td></tr>
+    <tr><td style="padding:8px 10px 8px 0">Responsive</td><td style="padding:8px 10px;color:#a3792f">Partial</td><td style="padding:8px 0">Only default sm/md/lg used, but which breakpoint gates what varies per component; a few fixed-size elements don't respond at all</td></tr>
+  </table>
+
+  <div style="margin-top:48px;padding-top:20px;border-top:1px solid #e8e4da;font-family:'Segoe UI',Helvetica,Arial,sans-serif;font-size:12px;color:#8a8578">
+    Scope: read <code>tailwind.config.js</code>, <code>globals.css</code>, <code>layout.tsx</code>, <code>DESIGN.md</code>, <code>loshu.tsx</code>, <code>components/ui/*</code> (Card, Button, Input, Badge), <code>components/forms/PersonForm.tsx</code>, and 10 of 12 files in <code>components/numerology/</code> (LoShuGrid, NumerologyDashboard, PartnershipScoreCard, ChatPanel, DriverConductorCard, PlaneBar, PlanetDayCard, RemediesCard, HealthCard; ComplementaryCard and NarrativeCard read partially via grep). Not read: ArrowsPanel.tsx, PersonalYearCard.tsx (grepped only), RepetitionCard.tsx, <code>lib/numerology/*</code> (pure logic, no styling). No changes were made to any source file.
+  </div>
+
+</div>
+
+</x-dc>
+</body>
+</html>
